@@ -1,5 +1,0 @@
-# Projet Jukebox
-
--> Les packages d'auth (accounts-ui et accounts-password) sont installés
--> Vous devrez installer mongoDB sur votre machine pour la base de données
--> lancer meteor en root !
