@@ -1,4 +1,5 @@
-la composition du groupe de projet ;
+<h1> PUT YOUR SOUUUND ! </h1>
+La composition du groupe de projet ;
 
     Roy Bodereau
     Johan Brun
