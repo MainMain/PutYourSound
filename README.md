@@ -6,11 +6,9 @@ La composition du groupe de projet ;
     Julien Goethal
     Joris Mansart
 
-
 - le nom du projet ;
 
      PutYourSound
-
 
 - une description succincte du projet ;
  Site web de partage de créations musicales :
