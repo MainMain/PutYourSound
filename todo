@@ -1,0 +1,44 @@
+Lancer l'application :
+	node index.js
+
+Architecture :
+	/views/ : contient les fichiers mustache ET fichiers javascripts
+	/index.js : point d'entrée de l'application. Il contient les config du serveur
+	/model : contient la modélisation des objets "Musique" et "User"
+	/manager : contient la liste des "Musique" et "User". Il agit sur les models. Il communique avec la BD pour chargement des structures de données et mise à jour
+
+Communication
+	/views <-> index.js <-> managers <-> models
+									 <-> database 
+
+TO-DO list :
+	Johan :
+		* Codage du manager des musiques (upload(), valider(), supprimer(), initialiser())
+		* Codage du modèle musique (constructeur, valider(), save())
+		* Idem pour accounts (gestion comptes)
+		* Gestion session sur serveur
+		* Gestion session sur client
+		* Créer classe vote_manager qui accumulera les votes et définira la prochaine musique à lire
+		* Sauvegarde du fichier dans le serveur
+		* 
+	Joris :
+		* Formulaire (ou drag zone) pour upload de fichier
+		* Code Js pour envoi du fichier au serveur
+		* Reception du fichier coté serveur
+		* Vérification de base coté serveur et appel de la méthode du manager manager/musique_manager.js 
+		* Intégrer mustache au projet
+		* Configuration express pour comptabilité avec Mustache
+		* Configuration de la route '/'
+		* Reception du vote pour le genre de la musique suivante
+		* Reception pour la validation ou suppression d'une musique
+	Julien :
+		* Finir le lecteur (fonctionnellement parlant)
+		* Se renseigner sur le streaming (comment il fonctionne)
+		* Se renseigner sur la lecture audio par différents clients
+		* Ajouter le formulaire pour le vote du genre de la musique suivante
+		* Envoi des requetes (valider / supprimer / voter) au serveur
+	Roy: 
+		* Créer la onepage
+		* Customiser lecteur de Julien
+		
+		N'hésitez pas à rajouter des tâches.
