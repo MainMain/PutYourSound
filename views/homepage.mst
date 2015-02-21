@@ -1,0 +1,33 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Test Mustache with NodeJS & Unicorns !</title>
+</head>
+
+<body>
+Page de test<br />
+1-> {{head.title}} <br />
+2-> {{homepage.title}}<br />
+3-> {{content.description}}<br />
+4-> {{content.data.projet}}<br />
+5->   <ul>
+        {{#content.data}}
+        <li>Projet: {{content.data.projet}}</li>
+        <li>Membres
+            <ul>
+                {{#content.data.team}}
+                <li>{{member}}</li>
+                {{/content.data.team}}
+            </ul>
+        </li>
+        {{/content.data}}
+    </ul> 
+</body>
+
+</html>
+
+<script>
+
+</script> 
