@@ -13,6 +13,7 @@ var demo = {
         };
 
 
+
 // requires ================================================================
 // import du framework express
 var express = require("express"),
@@ -21,6 +22,17 @@ var express = require("express"),
 var http = require("http");
 //var server = require('http').Server(app);
 //var io = require('socket.io')(server);
+
+
+
+
+// lien avec les managers =================================================================
+// référencement musique manager
+var musique_manager = require("./managers/musique_manager.js")
+// référencement vote manager
+var vote_manager = require("./managers/vote_manager.js")
+
+
 
 // configuration express et socket.io ===============================================================
 // lancement d'express
@@ -36,6 +48,8 @@ app.set('view engine', 'mst');
 app.set('views', __dirname + '/views');
 // dossier public
 app.use(express.static(__dirname + '/public')); 
+
+
 
 
 // routes =================================================================
@@ -61,6 +75,9 @@ server.listen(process.env.PORT || 3000);
 console.log("Serveur PutYourSound lancé sur 127.0.0.1:3000")
 
 
+
+
+// communication client <-> serveur =================================================================
 io.on('connection', function (socket) {
     // test reception
     socket.on('test_client_to_server', function(data)
@@ -72,6 +89,12 @@ io.on('connection', function (socket) {
     // test envoi
 
 });
+
+
+
+
+
+
 // Routes =================================================================
 /*exports.routes = function(app) {
       app.get('/',  exports.findAll);
