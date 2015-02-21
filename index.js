@@ -1,13 +1,5 @@
-// API express
-var express = require('express')
-var app = express();
-// API FileSystem
-var fs = require('fs'); 
-// IMPORT mustach Engine
-var mustache = require('mustache'); 
-
-// Données de test
-var demo = [{ 
+// données de test ================================================================
+var demo = { 
             "projet": "PutYourSound",
             "team": [{
                 "member": "Johan"
@@ -17,25 +9,69 @@ var demo = [{
                 "member": "Julien"
             }, {
                 "member": "Roy"
-            }]}];
+            }]
+        };
 
-// Route principale
-app.get('/:slug', function(req, res){ // get the url and slug info
-var slug =[req.params.slug][0]; // grab the page slug
 
-// Données à renvoyer (a modifier pour les websockets ?)
-var rData = {data:demo}; // wrap the data in a global object... (mustache starts from an object then parses)
+// requires ================================================================
+// import du framework express
+var express = require("express"),
+    // import du morteur de template express                  
+    mustacheExpress = require('mustache-express');  
 
-// Création de la page
-var page = fs.readFileSync(slug, "utf8"); // bring in the HTML file
 
-// Conversion des données avec mustache
-var html = mustache.to_html(page, rData); // replace all of the data
 
-// Envoi de la page convertie au client
-res.send(html); // send to client
+// configuration express ===============================================================
+// lancement d'express
+var app = express();
+// extension des fichiers mustache
+app.engine('mst', mustacheExpress());          
+// extension des vues partielles
+app.set('view engine', 'mst');
+// dossier des vues                
+app.set('views', __dirname + '/views');
+// dossier public
+app.use(express.static(__dirname + '/public')); 
+
+
+// routes =================================================================
+// route principale (racine)
+app.get('/', function(req, res) {
+    console.log("/");
+    res.render('master', {
+        head: {
+          title: 'page title'
+      },
+      content: {
+          title: 'post title',
+          description: 'description',
+          data : demo
+      }
+  });
 });
 
-// Lancement du serveur
-app.listen(3000);// start the server listening
-console.log('Server running at http://127.0.0.1:3000/'); // server start up message
+// lancement du serveur
+app.listen(process.env.PORT || 3000);
+console.log("Serveur PutYourSound lancé sur 127.0.0.1:3000")
+
+
+// Routes =================================================================
+/*exports.routes = function(app) {
+      app.get('/',  exports.findAll);
+      console.log("export route");
+}
+
+ 
+exports.findAll = function(req, res) {
+    console.log("findAll");
+ res.render('master', {
+        head: {
+          title: 'page title'
+      },
+      content: {
+          title: 'post title',
+          description: 'description',
+          data : demo
+      }
+  });
+}*/
