@@ -7,7 +7,7 @@
 </head>
 
 <body>
-Page de test<br />
+Page de test 2<br />
 1-> {{head.title}} <br />
 2-> {{homepage.title}}<br />
 3-> {{content.description}}<br />
@@ -28,6 +28,16 @@ Page de test<br />
 
 </html>
 
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script>
+  var socket = io.connect('http://127.0.0.1:3000');
 
-</script> 
+  // envoi au serveur dès l'ouverture de la page
+  socket.emit('test_client_to_server', 'HEYY SERVEUR');
+
+  // reception d'une donnée serveur
+  socket.on('test_server_to_client', function (data) 
+  {
+    console.log("Réception du serveur : " + data);
+  });
+</script>
