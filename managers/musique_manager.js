@@ -18,6 +18,10 @@ musique_Manager.Load = function()
 // Ajout d'une musique par un utilisateur
 musique_Manager.Ajouter = function()
 {
+	// Request id suivant
+
+	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
+	 
 	// ajout du fichier dans le dossier
 
 	// ajout dans la liste de musique (attribut)

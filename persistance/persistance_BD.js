@@ -20,5 +20,15 @@ persistance_BD.Initialiser = function()
 
 }
 
+persistance_BD.AjoutMusique = function()
+{
+	// connexion à la BD
+	mongoose.connect('mongodb://localhost/DevV1', function(err) {
+	if (err) { throw err; }
+	});
+
+	// initalisation des schémas
+
+}
 
 module.exports = persistance_BD;

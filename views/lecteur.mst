@@ -1,0 +1,4 @@
+<div>
+  <h2>Lecteur</h2><br/>
+   <button id="player">Play</button>
+</div>
