@@ -3,9 +3,48 @@
 <html>
 
 <head>
-
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="css/style.css">
+    <title>Put Your Sound !</title>
 </head>
 <body>
-      {{>homepage}}
+     <header>
+     	<h1>HEADER</h1>
+     	<ul id="menu">
+     		<li><a href="#" id="upload">Upload</a></li>
+     		<li><a href="#" id="two">Two</a></li>
+     		<li><a href="#" id="#">Nope</a></li>
+     	</ul>
+     </header>
+	<!-- Receiver pour le onepage-->
+     <div id="receiver"></div>
+     <!--Fin OnePage-->
+     <footer><h2>FOOTER</h2></footer>
 
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+$( document ).ready(function(){
+
+	var socket = io.connect('http://127.0.0.1:3000');
+	//Template initial
+	getTemplate("homepage");
+	//Menu----------------------------------------------------------
+	$("#menu li a").click(function () {		
+		$("#menu li a").parent().removeClass('active');
+		$(this).parent().addClass('active');
+		getTemplate($(this).attr('id'));
+	});
+	
+	function getTemplate(item){
+		console.log('getTemplate :' + item);
+		var template = '/template/' + item;
+		$.get(template, function(result) {
+			var rendered = result;
+			$('#receiver').html(rendered).trigger('mustacheLoaded', item);;
+		});
+	};
+});
+</script>
 </body>
+</html>

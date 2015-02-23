@@ -67,14 +67,27 @@ app.get('/', function(req, res) {
           data : demo
       }
   });
-})
-;
+});
+
+//Pour charger les templates dans la page en OnePage
+app.get("/template/:id", function(req, res){
+  console.log('template : '+ req.params.id);
+  res.render(req.params.id, {
+        head: {
+          title: 'page title'
+      },
+      content: {
+          title: 'post title',
+          description: 'description',
+          data : demo
+      }
+    });
+});
+
 // lancement du serveur
 // app
 server.listen(process.env.PORT || 3000);
 console.log("Serveur PutYourSound lancé sur 127.0.0.1:3000")
-
-
 
 
 // communication client <-> serveur =================================================================
@@ -89,29 +102,3 @@ io.on('connection', function (socket) {
     // test envoi
 
 });
-
-
-
-
-
-
-// Routes =================================================================
-/*exports.routes = function(app) {
-      app.get('/',  exports.findAll);
-      console.log("export route");
-}
-
- 
-exports.findAll = function(req, res) {
-    console.log("findAll");
- res.render('master', {
-        head: {
-          title: 'page title'
-      },
-      content: {
-          title: 'post title',
-          description: 'description',
-          data : demo
-      }
-  });
-}*/

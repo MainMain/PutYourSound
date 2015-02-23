@@ -1,0 +1,15 @@
+<div>
+	<form >
+		<fieldset>
+			<label for="songName">Nom de la chanson</label>
+			<input type="text" id="songName" name="songName">
+			<label for="artist">Artiste</label>
+			<input type="text" id="artist" name="artist">
+			<label for="genre">Genre</label>
+			<input type="text" id="genre" name="genre">
+			<label for="file">Fichier</label>
+			<input type="file" dropzone="copy" id="file" name="file">
+			<input type="submit" value="Submit">
+		</fieldset>
+	</form>
+</div>
