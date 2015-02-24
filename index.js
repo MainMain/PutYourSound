@@ -13,16 +13,22 @@ var demo = {
 };
 
 
-var pathToMusic =__dirname + "/musique/pending/";
+var pathToMusic =__dirname+"/musique/pending/";
 
 // requires ================================================================
 // import du framework express
 var express = require("express"),
   // import du morteur de template express                  
   mustacheExpress = require('mustache-express');  
-var http = require("http");
-var fs = require('fs');
-var child_process = require("child_process");
+  var http = require("http");
+  var fs = require('fs');
+  var child_process = require("child_process");
+  var Throttle = require('throttle');
+  var probe = require('node-ffprobe');
+  var lame = require('lame');
+  var siofu = require("socketio-file-upload");
+  var ip = require("ip");
+  
 
 // lien avec les managers =================================================================
 // référencement musique manager
@@ -30,7 +36,6 @@ var musique_manager = require("./managers/musique_manager.js");
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
 // File upload via socket.io
-var siofu = require("socketio-file-upload");
 
 // configuration express et socket.io ===============================================================
 // lancement d'express
@@ -50,76 +55,89 @@ app.use(express.static(__dirname + '/public'));
 // upload de fichier via socket.io
 app.use(siofu.router);
 
+//Initialisation du path pour récupérer les musiques
+musique_manager.pathToMusic = pathToMusic;
 
+// Objet permettent de streamer une musique donnée
+var streamer = {
+  encoder : undefined ,
 
+  decoder : undefined ,
+
+  init : function(){
+    this.encoder = lame.Encoder({channels: 2, bitDepth: 16, sampleRate: 44100});
+    this.decoder = lame.Decoder();
+    var that = this;
+    this.decoder.on('format', function(format) {
+      that.decoder.pipe(that.encoder);
+    });
+  },
+
+  streamSong : function(){
+
+    var track = pathToMusic + musique_manager.Load()[vote_manager.GetVoteDominant()];
+
+    console.log("Choosed : "+track);
+    var that = this;
+    probe(track, function(err, probeData) {
+      var bit_rate = probeData.format.bit_rate;
+      var currentStream = fs.createReadStream(track);
+      bit_rate = (bit_rate/10) * 1.4;
+      throttle = new Throttle(bit_rate);
+      currentStream.pipe(throttle);;
+      throttle.on('data', function(data){
+        that.decoder.write(data); // consider the decoder instance from the previous example
+      });
+
+      throttle.on('end', function(){
+        that.streamSong();
+      });
+    });
+  },
+};
+
+streamer.init();
+streamer.streamSong();
 
 // routes =================================================================
 // route principale (racine)
 app.get('/', function(req, res) {
-  console.log("/");
-    // envoi des données de la page
-    res.render('master', {
-      head: {
-        title: 'page title'
-      },
-      content: {
-        title: 'post title',
-        description: 'description',
-        data : demo
-      }
-    });
+  console.log("Requested root");
+  // envoi des données de la page
+  res.render('master', {
+      ip : ip.address(),
+      port : 3000
+  });
+});
+
+//Route du streaming 
+app.get('/stream.mp3', function(req, res) {
+  
+  streamer.encoder.on("data", function(data) {
+    res.write(data);
   });
 
+  streamer.encoder.on('end', function(){
+    res.end();
+  });
+
+});
 // lancement du serveur
 // app
 server.listen(process.env.PORT || 3000);
 
-console.log("Serveur PutYourSound lancé sur 127.0.0.1:3000")
-
+console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 // communication client <-> serveur =================================================================
-streamSong();
 
 io.on('connection', function (socket) {
 
   var uploader = new siofu;
-  uploader.dir = __dirname+"/musique/pending";
+  uploader.dir = pathToMusic;
   uploader.listen(socket);
   uploader.on("start", function(event){
     console.log("Artiste " + event.file.meta.artiste);
     console.log("Song " + event.file.meta.song);
     console.log("Genre " + event.file.meta.genre);
   });
-
 });
-
-function getSongs(){
-  return fs.readdirSync(__dirname + "/musique/pending");
-};
-
-function getRandomSong(Songs){
-  var index;
-  if(Songs.length === 0)
-    return null;
-  index = parseInt(Math.random()*Songs.length);
-  return {song: Songs[index], id: index};
-};
-
-function streamSong(){
-  var song=getRandomSong(getSongs()).song;
-   var ffmpeg = child_process.spawn("ffmpeg",[
-  "-re", "-i",
-   pathToMusic + song,
-    "-f",
-    "f32le",
-    "pipe:1"                      // Output to STDOUT
-    ]);
-  ffmpeg.stdout.on('data', function(data)
-  {
-    var buff = new Buffer(data);
-    io.emit('Stream', buff.toString('base64'));
-  });
-  ffmpeg.stdout.on('end', function(){
-    streamSong();
-  });
-};
