@@ -1,5 +1,5 @@
 // référencement autres couches
-var persistance = require("../persistance/persistance_BD.js")
+var persistance = require("../persistance/persistance_file.js")
 var vote_manager = require("./vote_manager.js");
 var fs = require("fs");
 
@@ -66,8 +66,9 @@ Lire : function()
 // Pour le test de la chaine de traitement
 Test : function()
 {
-	console.log("[musique_Manager] : Test");
+	console.log("[musique_Manager] : OK");
+	persistance.Test();
 }
 };
 
-module.exports = musique_Manager;
+module.exports = musique_manager;

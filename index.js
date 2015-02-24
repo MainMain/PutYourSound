@@ -37,6 +37,7 @@ var musique_manager = require("./managers/musique_manager.js");
 musique_manager.Test();
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
+vote_manager.Test();
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================

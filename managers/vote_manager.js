@@ -36,6 +36,11 @@ GetVoteDominant : function()
 
 	//Simulé
   	return parseInt(Math.random()*3);
+},
+
+Test : function()
+{
+	console.log("[vote_Manager] : Test");
 }
 };
 

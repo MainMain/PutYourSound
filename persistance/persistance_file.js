@@ -71,7 +71,7 @@ persistance_file.SupprimerMusique = function(nlleMusique)
 // Pour le test de la chaine de traitement
 persistance_file.Test = function()
 {
-	console.log("[persistance_file] : Test");
+	console.log("[persistance_file] : OK");
 
 }
 
