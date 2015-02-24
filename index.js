@@ -27,6 +27,8 @@ var child_process = require("child_process");
 // lien avec les managers =================================================================
 // référencement musique manager
 var musique_manager = require("./managers/musique_manager.js");
+// Pour le test de la chaine de traitement
+musique_manager.Test();
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
 // File upload via socket.io

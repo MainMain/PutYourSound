@@ -7,6 +7,7 @@ function musique_Manager(){}
 // Attributs
 // Liste des musiques
 this.listeMusiques;
+this.pathDossierMusiques;
 this.mdpValidation = "heyheyyou";
 
 // Initialisation (chargement des données)
@@ -53,6 +54,12 @@ musique_Manager.Supprimer = function()
 musique_Manager.Lire = function()
 {
 
+}
+
+// Pour le test de la chaine de traitement
+musique_Manager.Test = function()
+{
+	console.log("[musique_Manager] : Test");
 }
 
 module.exports = musique_Manager;
