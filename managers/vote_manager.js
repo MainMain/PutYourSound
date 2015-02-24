@@ -35,7 +35,7 @@ GetVoteDominant : function()
 	// Renvoi
 
 	//Simulé
-  	return parseInt(Math.random()*3);
+  	return parseInt(Math.random()*10);
 },
 
 Test : function()

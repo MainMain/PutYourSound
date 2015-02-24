@@ -13,6 +13,7 @@
 
 	<!-- Bootstrap CSS -->
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/spinner.css" rel="stylesheet">
 
 	<!-- Custom CSS -->
 	<link href="/css/small-business.css" rel="stylesheet">
@@ -39,11 +40,6 @@
 	<div class="container">
 		<div class="row">
 			<!-- Player -->
-		<!--
-			<div class="col-md-7">
-				<img class="img-responsive img-rounded" src="imgs/player.png" alt="">
-			</div>
-		-->
 			<div id="lecteur" class="col-md-7">{{>lecteur}}</div>
 			<!-- Description -->
 			<div class="col-md-5">
@@ -81,7 +77,7 @@
 				<p>Choisissez le style de musique à passer ensuite sur notre webradio.</p>
 			</div>
 			<!-- Admin -->
-			<div id="moderation" class="col-md-4">{{>moderation}}</div>
+			<div id="moderation" class="col-md-4">{{>moderationPass}}</div>
 		</div>
 
 		<!-- Footer -->
@@ -99,6 +95,7 @@
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/audioTagSample.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/mustache.min.js"></script>
 
 
 	<script type="text/javascript">
@@ -125,13 +122,16 @@
 			event.file.meta.genre = $("#genre").val();
 		});
 
-	$("#player").click(function(){
-		var sample = new AudioTagSample();
-		//sample.play('http://127.0.0.1:3000/DJSonaConcussive(BassnectarxRenholder).mp3');
+	$("#submitPass").click(function(){
+		var pass = $("#passMode").val();
+		if(pass)
+			socket.emit("passMode", pass);
 	});
 
-	socket.on('Stream', function(result){
-		$("#audio").src(result);
+	socket.on("passModeOk", function(data){
+		var moderation = $('#moderationReceiver');
+		var rendered = Mustache.render(data);
+		moderation.html(rendered);
 	});
 });
 	

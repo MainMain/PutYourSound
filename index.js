@@ -13,7 +13,6 @@ var demo = {
 };
 
 
-var pathToMusic =__dirname+"/musique/pending/";
 
 // requires ================================================================
 // import du framework express
@@ -28,7 +27,9 @@ var express = require("express"),
   var lame = require('lame');
   var siofu = require("socketio-file-upload");
   var ip = require("ip");
-  
+  var path = require("path");
+
+var pathToMusic = path.normalize(__dirname+"/musique/pending/");
 
 // lien avec les managers =================================================================
 // référencement musique manager
@@ -142,5 +143,15 @@ io.on('connection', function (socket) {
     console.log("Artiste " + event.file.meta.artiste);
     console.log("Song " + event.file.meta.song);
     console.log("Genre " + event.file.meta.genre);
+  });
+
+//pour charger le formulaire de moderation si mdp valide
+  socket.on('passMode', function(data){
+    if(data === musique_manager.mdpValidation)
+      file = path.normalize(__dirname + "/views/moderationForm.mst");
+       fs.readFile(file, "utf8",function(error, filedata){
+        if(error) throw error;
+         socket.emit("passModeOk", filedata.toString());
+      });
   });
 });

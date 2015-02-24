@@ -20,7 +20,7 @@ Load : function()
 	if(!this.pathToMusic)
 		return null;
 	this.listeMusiques = fs.readdirSync(this.pathToMusic);
-	this.listeMusiques.splice(0,1);
+	this.listeMusiques.splice(this.listeMusiques.indexOf(".keep"),1);
 	return this.listeMusiques;
 },
 
