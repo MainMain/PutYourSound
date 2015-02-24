@@ -1,4 +1,5 @@
 <div>
   <h2>Lecteur</h2><br/>
+  <audio src="" id="audio"></audio>
    <button id="player">Play</button>
 </div>

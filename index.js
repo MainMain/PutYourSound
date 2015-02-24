@@ -20,9 +20,12 @@ var pathToMusic =__dirname + "/musique/pending/";
 var express = require("express"),
   // import du morteur de template express                  
   mustacheExpress = require('mustache-express');  
-var http = require("http");
-var fs = require('fs');
-var child_process = require("child_process");
+  var http = require("http");
+  var fs = require('fs');
+  var child_process = require("child_process");
+  var throttle = require('throttle');
+  var probe = require('node-ffprobe');
+  var lame = require('lame');
 
 // lien avec les managers =================================================================
 // référencement musique manager
@@ -78,7 +81,6 @@ console.log("Serveur PutYourSound lancé sur 127.0.0.1:3000")
 
 
 // communication client <-> serveur =================================================================
-streamSong();
 
 io.on('connection', function (socket) {
 
@@ -105,21 +107,30 @@ function getRandomSong(Songs){
   return {song: Songs[index], id: index};
 };
 
+var encoder = lame.Encoder({channels: 2, bitDepth: 16, sampleRate: 44100});
+encoder.on("data", function(data) {
+  sendData(data);
+});
+var decoder = lame.Decoder();
+decoder.on('format', function(format) {
+  decoder.pipe(encoder);
+});
+
 function streamSong(){
   var song=getRandomSong(getSongs()).song;
-   var ffmpeg = child_process.spawn("ffmpeg",[
-  "-re", "-i",
-   pathToMusic + song,
-    "-f",
-    "f32le",
-    "pipe:1"                      // Output to STDOUT
-    ]);
-  ffmpeg.stdout.on('data', function(data)
-  {
-    var buff = new Buffer(data);
-    io.emit('Stream', buff.toString('base64'));
+  probe(track, function(err, probeData) {
+    var bit_rate = probeData.format.bit_rate;
+    var currentStream = fs.createReadStream('track.mp3');
+  var unthrottle = throttle(currentStream, (bit_rate/10) * 1.4); // this multiplier may vary depending on your machine
+  currentStream.on('data', function(data){
+    decoder.write(data); // consider the decoder instance from the previous example
   });
-  ffmpeg.stdout.on('end', function(){
-    streamSong();
-  });
+});
 };
+
+function sendData(data){
+  io.emit("Stream", data);
+};
+
+
+
