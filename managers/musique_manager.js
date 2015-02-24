@@ -1,4 +1,5 @@
 // référencement autres couches
+var Musique = require("../model/musique.js")
 var persistance = require("../persistance/persistance_file.js")
 var vote_manager = require("./vote_manager.js");
 var fs = require("fs");
@@ -68,6 +69,12 @@ Test : function()
 {
 	console.log("[musique_Manager] : OK");
 	persistance.Test();
+
+	// Julien : ici un test avec un objet Musique (! majuscule (pas obligatoire))
+	var musiqueTest = new Musique(1, "nom", "artiste", "genre", "passProtection", "validee");
+	console.log(musiqueTest.getNom());
+	musiqueTest.nom = "bref";
+	console.log(musiqueTest.getNom());
 }
 };
 

@@ -40,7 +40,7 @@ GetVoteDominant : function()
 
 Test : function()
 {
-	console.log("[vote_Manager] : Test");
+	console.log("[vote_Manager] : OK");
 }
 };
 
