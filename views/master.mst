@@ -27,8 +27,8 @@
 
 	<script type="text/javascript">
 	$( document ).ready(function(){
-var context = new AudioContext();
-		var socket = io.connect('http://127.0.0.1:3000');
+	var context = new AudioContext();
+		var socket = io.connect('http://{{ip}}:{{port}}');
 		var siofu = new SocketIOFileUpload(socket);
 
 		siofu.listenOnSubmit(document.getElementById("submit"), document.getElementById("file"));
@@ -51,66 +51,14 @@ var context = new AudioContext();
 
 	$("#player").click(function(){
 		var sample = new AudioTagSample();
-		sample.play('http://127.0.0.1:3000/DJSonaConcussive(BassnectarxRenholder).mp3');
+		//sample.play('http://127.0.0.1:3000/DJSonaConcussive(BassnectarxRenholder).mp3');
 	});
 
 	socket.on('Stream', function(result){
-
-	  var d1 = base64DecToArr(result).buffer;
-	  var d2 = new DataView(d1);
-
-	  var data = new Float32Array(d2.byteLength / Float32Array.BYTES_PER_ELEMENT);
-	  for (var jj = 0; jj < data.length; ++jj)
-	  {
-	      data[jj] = d2.getFloat32(jj * Float32Array.BYTES_PER_ELEMENT, true);
-	  }
-
-	  var audioBuffer = context.createBuffer(2, data.length, 44100);
-	  audioBuffer.getChannelData(0).set(data);
-	  audioBuffer.getChannelData(1).set(data);
-	  var source = context.createBufferSource(); // creates a sound source
-	  source.buffer = audioBuffer;
-	  source.connect(context.destination); // connect the source to the context's destination (the speakers)
-	  source.start(0);
+		$("#audio").src(result);
 	});
-
-function b64ToUint6 (nChr) {
-
-  return nChr > 64 && nChr < 91 ?
-      nChr - 65
-    : nChr > 96 && nChr < 123 ?
-      nChr - 71
-    : nChr > 47 && nChr < 58 ?
-      nChr + 4
-    : nChr === 43 ?
-      62
-    : nChr === 47 ?
-      63
-    :
-      0;
-
-}
-	function base64DecToArr (sBase64, nBlocksSize) {
-
-  var
-    sB64Enc = sBase64.replace(/[^A-Za-z0-9\+\/]/g, ""), nInLen = sB64Enc.length,
-    nOutLen = nBlocksSize ? Math.ceil((nInLen * 3 + 1 >> 2) / nBlocksSize) * nBlocksSize : nInLen * 3 + 1 >> 2, taBytes = new Uint8Array(nOutLen);
-
-  for (var nMod3, nMod4, nUint24 = 0, nOutIdx = 0, nInIdx = 0; nInIdx < nInLen; nInIdx++) {
-    nMod4 = nInIdx & 3;
-    nUint24 |= b64ToUint6(sB64Enc.charCodeAt(nInIdx)) << 18 - 6 * nMod4;
-    if (nMod4 === 3 || nInLen - nInIdx === 1) {
-      for (nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++, nOutIdx++) {
-        taBytes[nOutIdx] = nUint24 >>> (16 >>> nMod3 & 24) & 255;
-      }
-      nUint24 = 0;
-
-    }
-  }
-
-  return taBytes;
-}
 });
+	
 </script>
 </body>
 </html>

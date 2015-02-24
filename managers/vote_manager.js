@@ -2,22 +2,16 @@
 var persistance = require("../persistance/persistance_BD.js")
 
 // Constructeur
-function vote_Manager(){}
-
-// Attributs
-// liste des votes possible avec le nom de voix en cours
-this.genre_1; // ex : { "rock", 5}
-this.genre_2;
-this.genre_3;
-// liste des id des votants
-this.listeVotants;
-
-// Définition des dtrois genres aléatoire (attributs)
-vote_Manager.Initialiser = function()
+var vote_Manager = {
+	genre_1 : undefined,
+	genre_2 : undefined,
+	genre_3 : undefined,
+	listeVotants : undefined,
+Initialiser : function()
 {
 	// demande la liste des genres à la persistance
 
-	// choix de trois votes aléatoires
+	// choix de trois genre aléatoires
 
 	// attributions dans les attributs avec nombre voix = 0
 
@@ -25,7 +19,7 @@ vote_Manager.Initialiser = function()
 },
 
 // Un utilisateur vient de voter
-vote_Manager.AjouterVote = function(nomDuGenre)
+AjouterVote : function(nomDuGenre)
 {
 	// vérification que c'est un des trois genres en attribut
 
@@ -34,11 +28,17 @@ vote_Manager.AjouterVote = function(nomDuGenre)
 },
 
 // renvoi le genre avec le plus de votes
-vote_Manager.GetVoteDominant = function()
+GetVoteDominant : function()
 {
-	// Recherche du gnre avec le plus de voix
+	// Recherche du genre avec le plus de voix
 
 	// Renvoi
+
+	//Simulé
+  	return parseInt(Math.random()*3);
 }
+};
+
+// Définition des dtrois genres aléatoire (attributs)
 
 module.exports = vote_Manager;

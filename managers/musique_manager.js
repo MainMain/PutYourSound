@@ -1,28 +1,33 @@
 // référencement autres couches
 var persistance = require("../persistance/persistance_BD.js")
-
-// Constructeur
-function musique_Manager(){}
+var vote_manager = require("./vote_manager.js");
+var fs = require("fs");
 
 // Attributs
 // Liste des musiques
-this.listeMusiques;
-this.pathDossierMusiques;
-this.mdpValidation = "heyheyyou";
+
+// Constructeur
+var musique_manager = {
+	listeMusiques : undefined,
+	pathToMusic : "",
+	mdpValidation : "heyheyyou",
+
 
 // Initialisation (chargement des données)
-musique_Manager.Load = function()
-{
-	// chargement des musiques validées
+Load : function()
+{	
+	if(!this.pathToMusic)
+		return null;
+	return fs.readdirSync(this.pathToMusic);
 },
 
 // Ajout d'une musique par un utilisateur
-musique_Manager.Ajouter = function()
+Ajouter : function()
 {
 	// Request id suivant
 
 	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
-	 
+
 	// ajout du fichier dans le dossier
 
 	// ajout dans la liste de musique (attribut)
@@ -31,7 +36,7 @@ musique_Manager.Ajouter = function()
 },
 
 // Validation d'une musique par un modérateur
-musique_Manager.Valider = function()
+Valider : function()
 {
 	
 	// !vérifier que le mot de passe de validation est bon (remplace le principe des sessions)
@@ -42,7 +47,7 @@ musique_Manager.Valider = function()
 },
 
 // Suppression de la musique (! ne doit pas être en cours de lecture)
-musique_Manager.Supprimer = function()
+Supprimer : function()
 {
 	// !vérifier que le mot de passe de suppression est bon
 
@@ -51,15 +56,18 @@ musique_Manager.Supprimer = function()
 	// déréférencement dans la persistance
 },
 
-musique_Manager.Lire = function()
+Lire : function()
 {
+	
+	console.log(vote_manager.GetVoteDominant());
+},
 
-}
 
 // Pour le test de la chaine de traitement
-musique_Manager.Test = function()
+Test : function()
 {
 	console.log("[musique_Manager] : Test");
 }
+};
 
 module.exports = musique_Manager;
