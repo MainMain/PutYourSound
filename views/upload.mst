@@ -1,5 +1,5 @@
 <div>
-	<h2>Upload</h2>
+	<h2>Uploadez vos sons</h2>
 	<form id="formUpload">
 		<fieldset>
 			<label for="songName">Nom de la chanson
@@ -13,7 +13,7 @@
 			</label>
 			<label for="file">Fichier
 				<input type="file" dropzone="copy" id="file" name="file" accept="audio/*" required>
-				<input type="submit" value="Submit" id="submit">
+				<input type="submit" value="Uploader" id="submit">
 			</label>
 		</fieldset>
 	</form>
