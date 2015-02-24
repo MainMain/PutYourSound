@@ -2,18 +2,19 @@
 	<h2>Uploadez vos sons</h2>
 	<form id="formUpload">
 		<fieldset>
-			<label for="songName">Nom de la chanson
+			<label for="songName">Nom de la chanson :<br />
 				<input type="text" id="songName" name="songName" required>
 			</label>
-			<label for="artist">Artiste
+			<label for="artist">Artiste :<br />
 				<input type="text" id="artist" name="artist" required>
 			</label>
-			<label for="genre">Genre
+			<label for="genre">Genre :<br />
 				<input type="text" id="genre" name="genre" required>
 			</label>
-			<label for="file">Fichier
-				<input type="file" dropzone="copy" id="file" name="file" accept="audio/*" required>
-				<input type="submit" value="Uploader" id="submit">
+			<label for="file">Fichier :<br />
+				<input type="file" value="Parcourir" dropzone="copy" id="file" name="file" accept="audio/*" required>
+				<br />
+				<input type="submit" value="Uploader" class="btn btn-primary btn-lg" id="submit">
 			</label>
 		</fieldset>
 	</form>
