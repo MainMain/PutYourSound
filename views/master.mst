@@ -1,28 +1,104 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="fr">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="css/spinner.css">
-	<title>Put Your Sound !</title>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Put Your Sound - Sons indépendants</title>
+
+	<!-- Bootstrap CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom CSS -->
+	<link href="/css/small-business.css" rel="stylesheet">
+
 </head>
+
 <body>
-	<header>
-		<h1>HEADER</h1>
-	</header>
-	<!-- Receiver pour le onepage-->
-	<div id="lecteur">{{>lecteur}}</div>
-	<div id="formulaireAjout">{{>upload}}</div>
-	<div id="moderation">{{>moderation}}</div>
-	<!--Fin OnePage-->
-	<footer><h2>FOOTER</h2></footer>
+
+	<!-- NavBar -->
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<img src="imgs/PYS_small.png" alt="">
+			</div>
+			<ul class="nav navbar-nav">
+				<li>
+					<b>PUT YOUR SOUND - Une nouvelle façon d'écouter les sons indépendants !</b>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<!-- Body -->
+	<div class="container">
+		<div class="row">
+			<!-- Player -->
+		<!--
+			<div class="col-md-7">
+				<img class="img-responsive img-rounded" src="imgs/player.png" alt="">
+			</div>
+		-->
+			<div id="lecteur" class="col-md-7">{{>lecteur}}</div>
+			<!-- Description -->
+			<div class="col-md-5">
+				<br/>
+				<h1><b>Put Your Sound</b></h1>
+				<p>
+					<b>
+						<br/>
+						- Créé par et pour les amateurs de nouvelles sonorités.<br/><br/>
+						- Une nouvelle plateforme d'écoute musicale indépendante.<br/><br/>
+						- Uploadez vos créations et partagez-les avec la communauté.<br/><br/>
+					</b>
+				</p>
+			</div>
+		</div>
+
+		<hr>
+
+		<!-- Notice -->
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="well text-center">
+					Merci de noter que tout fichier présentant une violation du droit d'auteur entrainera sa suppression systématique ainsi qu'un bannissement définitif.
+				</div>
+			</div>
+		</div>
+
+		<!-- Rows -->
+		<div class="row">
+			<!-- Upload -->
+			<div id="formulaireAjout" class="col-md-4">{{>upload}}</div>
+			<!-- Vote -->
+			<div class="col-md-4">
+				<h2>Votez pour votre style</h2>
+				<p>Choisissez le style de musique à passer ensuite sur notre webradio.</p>
+			</div>
+			<!-- Admin -->
+			<div id="moderation" class="col-md-4">{{>moderation}}</div>
+		</div>
+
+		<!-- Footer -->
+		<footer>
+			<div class="row">
+				<div class="col-lg-12">
+					<p>Copyright &copy; Licorns&Co. 2042</p>
+				</div>
+			</div>
+		</footer>
+	</div>
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/siofu/client.js"></script>
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/audioTagSample.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 
 
 	<script type="text/javascript">
