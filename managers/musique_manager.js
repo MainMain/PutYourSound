@@ -17,34 +17,51 @@ var musique_manager = {
 // Initialisation (chargement des données)
 Load : function()
 {	
+	// chaergemente n mémoire de la liste des musiques
+	this.listeMusiques = persistance.GetMusiques();
+
 	if(!this.pathToMusic)
 		return null;
+
 	return fs.readdirSync(this.pathToMusic);
 },
 
 // Ajout d'une musique par un utilisateur
-Ajouter : function()
+Ajouter : function(nom, artiste, genre, passProtection)
 {
-	// Request id suivant
+	// Request id 
+	int id = GenerateId();
 
 	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
+	// fait dans index.js
 
 	// ajout du fichier dans le dossier
+	// fait dans index.je
 
 	// ajout dans la liste de musique (attribut)
-	
+	var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
+
 	// référencement dans la persistance
+	persistance.AjouterMusique(nlleMusique);
 },
 
 // Validation d'une musique par un modérateur
-Valider : function()
+Valider : function(idMusique)
 {
-	
-	// !vérifier que le mot de passe de validation est bon (remplace le principe des sessions)
-
-	// ajout dans la liste de musique (attribut)
+	// note : on ne vérifie pas le mot de passe (déja vérifié pour accéder au panel)
+	// validation dans la liste de musique (attribut)
+	for (curMusique in this.listeMusiques)
+	{
+		if (curMusique.GetId() === idMusique)
+		{
+			curMusique.doValider();
+			console.log(curMusique.isValidee());
+			
+		}
+	}
 
 	// référencement dans la persistance
+	persistance.ValiderMusique(idMusique);
 },
 
 // Suppression de la musique (! ne doit pas être en cours de lecture)
@@ -63,18 +80,34 @@ Lire : function()
 	console.log(vote_manager.GetVoteDominant());
 },
 
+IsPassValidationOk : function(passEntree)
+{
+	return (this.passProtection === passEntree);
+}
 
 // Pour le test de la chaine de traitement
 Test : function()
 {
-	console.log("[musique_Manager] : OK");
-	persistance.Test();
+	//console.log("[musique_Manager] : OK");
+	//persistance.Test();
 
 	// Julien : ici un test avec un objet Musique (! majuscule (pas obligatoire))
-	var musiqueTest = new Musique(1, "nom", "artiste", "genre", "passProtection", "validee");
-	console.log(musiqueTest.getNom());
-	musiqueTest.nom = "bref";
-	console.log(musiqueTest.getNom());
+	//var musiqueTest = new Musique(1, "nom", "artiste", "genre", "passProtection", "validee");
+	//console.log(musiqueTest.getNom());
+	//musiqueTest.nom = "bref";
+	//console.log(musiqueTest.getNom());
+},
+
+GenerateId : function()
+{
+    var id = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var longueurId = 6;
+
+    for( var i=0; i < longueurId; i++ )
+        id += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return id;
 }
 };
 

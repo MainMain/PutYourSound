@@ -33,11 +33,8 @@ var express = require("express"),
 // lien avec les managers =================================================================
 // référencement musique manager
 var musique_manager = require("./managers/musique_manager.js");
-// Pour le test de la chaine de traitement
-musique_manager.Test();
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
-vote_manager.Test();
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -62,6 +59,7 @@ app.use(siofu.router);
 musique_manager.pathToMusic = pathToMusic;
 
 // Objet permettent de streamer une musique donnée
+// JORIS : Pourquoi ne pas créer un "stream_manager" (découpage en couche)?
 var streamer = {
   encoder : undefined ,
 
@@ -132,6 +130,11 @@ server.listen(process.env.PORT || 3000);
 console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 // communication client <-> serveur =================================================================
+
+// JORIS : méthoder à appeller pour tester pass modération 
+// -> musique_manager.IsPassValidationOk(passEntree)
+// il renvoi un booléen : true si pass ok
+
 
 io.on('connection', function (socket) {
 
