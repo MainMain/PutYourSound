@@ -27,8 +27,8 @@
 
 	<script type="text/javascript">
 	$( document ).ready(function(){
-var context = new AudioContext();
-		var socket = io.connect('http://127.0.0.1:3000');
+	var context = new AudioContext();
+		var socket = io.connect('http://{{ip}}:{{port}}');
 		var siofu = new SocketIOFileUpload(socket);
 
 		siofu.listenOnSubmit(document.getElementById("submit"), document.getElementById("file"));
@@ -57,7 +57,7 @@ var context = new AudioContext();
 	socket.on('Stream', function(result){
 		$("#audio").src(result);
 	});
-
+});
 	
 </script>
 </body>

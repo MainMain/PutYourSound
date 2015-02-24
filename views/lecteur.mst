@@ -1,5 +1,10 @@
 <div>
   <h2>Lecteur</h2><br/>
-  <audio src="" id="audio"></audio>
-   <button id="player">Play</button>
+  <span id="infoSong"></span>
+  <audio src="http://{{ip}}:{{port}}/stream.mp3" id="player" autoplay></audio>
+  <div>
+        <button onclick="document.getElementById('player').volume+=0.1">Volume Up</button>
+        <button onclick="document.getElementById('player').volume-=0.1">Volume Down</button>
+        <button onclick="document.getElementById('player').muted = document.getElementById('player').muted ? false : true">Mute</button>
+  </div>
 </div>
