@@ -19,7 +19,9 @@ Load : function()
 {	
 	if(!this.pathToMusic)
 		return null;
-	return fs.readdirSync(this.pathToMusic);
+	this.listeMusiques = fs.readdirSync(this.pathToMusic);
+	this.listeMusiques.splice(0,1);
+	return this.listeMusiques;
 },
 
 // Ajout d'une musique par un utilisateur
