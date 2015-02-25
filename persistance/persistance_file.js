@@ -4,10 +4,11 @@ var Musique = require("../model/musique.js")
 function persistance_file(){}
 
 // Attributs
-this.pathToFile = "";
+var persistance_file = {
+	pathToMusic : undefined,
 
 // Renvoi les musiques validées
-persistance_file.GetMusiquesValidees = function()
+GetMusiquesValidees : function()
 {
 	// lecture du fichier des musiques
 
@@ -15,7 +16,7 @@ persistance_file.GetMusiquesValidees = function()
 },
 
 // Renvoi les musiques en attente de validation
-persistance_file.GetMusiquesPending = function()
+GetMusiquesPending : function()
 {
 	// lecture du fichier des musiques
 
@@ -23,20 +24,29 @@ persistance_file.GetMusiquesPending = function()
 },
 
 // Renvoi toutes les musiques
-persistance_file.GetMusiques = function()
+GetMusiques : function(pathToMusic)
 {	
-	// liste musique simulée
-
-	// création d'une liste de musique pour test
-	var listeMusiques = new Array();
-	var music1 = new Musique("a1", "nom1", "artiste1", "genre1", false);
-	var music2 = new Musique("a2", "nom2", "artiste2", "genre2", false);
-	var music3 = new Musique("a3", "nom3", "artiste3", "genre3", false);
-	listeMusiques.push(music1);
-	listeMusiques.push(music2);
-	listeMusiques.push(music3);
+	// affectation chemin
+	this.pathToMusic = pathToMusic;
 
 	// lecture du fichier des musiques
+	// **création d'une liste de musique pour test**
+	var listeMusiques = new Array();
+	var music1 = new Musique("idAAAA", "a_part_of_you", "mainmain", "trance", false);
+	
+
+	//ajout à la liste qu'on va renvoyer
+	listeMusiques.push(music1);
+
+	
+
+	// vérifier que la musique lue dans le fichier existe bien ! 
+	/*
+	if(!this.pathToMusic)
+		return null;
+	this.listeMusiques = fs.readdirSync(this.pathToMusic);
+	this.listeMusiques.splice(this.listeMusiques.indexOf(".keep"),1);
+	return this.listeMusiques;*/
 
 	// le bon log
 	console.log("[PERSISTANCE] : Chargement de (" + listeMusiques.length + ") musiques");
@@ -46,7 +56,7 @@ persistance_file.GetMusiques = function()
 },
 
 // Renvoi tout les genres différents
-persistance_file.GetGenres = function()
+GetGenres : function()
 {
 	// lecture du fichier des genres
 
@@ -54,7 +64,7 @@ persistance_file.GetGenres = function()
 },
 
 // Enregistrement la musiques qui vient d'être validée
-persistance_file.AjouterMusique = function(nlleMusique)
+AjouterMusique : function(nlleMusique)
 {
 	// nlleMusique -> objet musique avec les infos sur la nouvelle musique
 
@@ -64,7 +74,7 @@ persistance_file.AjouterMusique = function(nlleMusique)
 },
 
 // Validation de la musique
-persistance_file.ValiderMusique = function(idMusique)
+ValiderMusique : function(idMusique)
 {
 	// recherche de la ligne dans le fichier
 
@@ -76,7 +86,7 @@ persistance_file.ValiderMusique = function(idMusique)
 },
 
 // Validation de la musique
-persistance_file.SupprimerMusique = function(nlleMusique)
+SupprimerMusique : function(nlleMusique)
 {
 	// recherche de la ligne dans le fichier
 
@@ -86,10 +96,10 @@ persistance_file.SupprimerMusique = function(nlleMusique)
 },
 
 // Pour le test de la chaine de traitement
-persistance_file.Test = function()
+Test : function()
 {
 	console.log("[persistance_file] : OK");
 
 }
-
+};
 module.exports = persistance_file;

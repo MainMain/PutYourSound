@@ -15,23 +15,19 @@ var musique_manager = {
 
 
 // Initialisation (chargement des données)
-Load : function()
+Initialiser : function(pathToMusic)
 {	
 	// init array
 	this.listeMusiques = new Array();
 
+	// affectation chemin
+	this.pathToMusic = pathToMusic;
+
 	// chargement en mémoire de la liste des musiques
-	this.listeMusiques = persistance.GetMusiques();
+	this.listeMusiques = persistance.GetMusiques(pathToMusic);
 
 	// le bon log
 	console.log("[MUSIQUE_MANAGER] : Chargement de (" + this.listeMusiques.length + ") musiques");
-	
-	// a commenter
-	if(!this.pathToMusic)
-		return null;
-	this.listeMusiques = fs.readdirSync(this.pathToMusic);
-	this.listeMusiques.splice(this.listeMusiques.indexOf(".keep"),1);
-	return this.listeMusiques;
 },
 
 // Ajout d'une musique par un utilisateur
@@ -99,7 +95,15 @@ Supprimer : function(idMusiqueASuppr)
 
 Lire : function()
 {
-	console.log("[MUSIQUE_MANAGER] : Vote dominant : " + vote_manager.GetVoteDominant());
+	//console.log("[MUSIQUE_MANAGER] : Vote dominant : " + vote_manager.GetVoteDominant());
+},
+
+GetMusiqueAleatoire : function()
+{
+	var nbrMusique = this.listeMusiques.length;
+	var nbrAleatoire = Math.floor(Math.random() *  this.listeMusiques.length);
+	// retourne un objet musique aléatoire
+	return this.listeMusiques[nbrAleatoire];
 },
 
 IsPassValidationOk : function(passEntree)

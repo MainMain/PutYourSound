@@ -6,9 +6,12 @@ var vote_Manager = {
 	genre_1 : undefined,
 	genre_2 : undefined,
 	genre_3 : undefined,
+	listeGenres : undefined,
 	listeVotants : undefined,
+
 Initialiser : function()
 {
+	// 
 	// demande la liste des genres à la persistance
 
 	// choix de trois genre aléatoires
@@ -35,7 +38,7 @@ GetVoteDominant : function()
 	// Renvoi
 
 	//Simulé
-  	return parseInt(Math.random()*3);
+  	//return parseInt(Math.random()*3);
 },
 
 Test : function()
