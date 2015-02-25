@@ -5,7 +5,17 @@ function persistance_file(){}
 
 // Attributs
 var persistance_file = {
+	pathToMusicFile : "",
 	pathToMusic : undefined,
+
+// Init
+Initialiser : function(pathToMusic)
+{
+	// affectation chemin
+	this.pathToMusic = pathToMusic;
+
+	console.log("[PERSISTANCE] : chemin musique initialisé à " + this.pathToMusic);
+},
 
 // Renvoi les musiques validées
 GetMusiquesValidees : function()
@@ -24,20 +34,17 @@ GetMusiquesPending : function()
 },
 
 // Renvoi toutes les musiques
-GetMusiques : function(pathToMusic)
+GetMusiques : function()
 {	
-	// affectation chemin
-	this.pathToMusic = pathToMusic;
-
 	// lecture du fichier des musiques
 	// **création d'une liste de musique pour test**
 	var listeMusiques = new Array();
-	var music1 = new Musique("idAAAA", "a_part_of_you", "mainmain", "trance", false);
+	var music1 = new Musique("idAAAA", "a_part_of_you", "mainmain", "trance", "", false);
 	
 
 	//ajout à la liste qu'on va renvoyer
 	listeMusiques.push(music1);
-
+	console.log(music1);
 
 	// vérifier que la musique lue dans le fichier existe bien ! 
 	/*

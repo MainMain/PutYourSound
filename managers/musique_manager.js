@@ -17,6 +17,9 @@ var musique_manager = {
 // Initialisation (chargement des données)
 Initialiser : function(pathToMusic)
 {	
+	// init persistance
+	persistance.Initialiser(pathToMusic);
+
 	// init array
 	this.listeMusiques = new Array();
 
@@ -24,7 +27,7 @@ Initialiser : function(pathToMusic)
 	this.pathToMusic = pathToMusic;
 
 	// chargement en mémoire de la liste des musiques
-	this.listeMusiques = persistance.GetMusiques(pathToMusic);
+	this.listeMusiques = persistance.GetMusiques();
 
 	// le bon log
 	console.log("[MUSIQUE_MANAGER] : Chargement de (" + this.listeMusiques.length + ") musiques");
@@ -58,16 +61,16 @@ Valider : function(idMusique)
 {
 	// note : on ne vérifie pas le mot de passe (déja vérifié pour accéder au panel)
 	// validation dans la liste de musique (attribut)
-	for (curMusique in this.listeMusiques)
+	var curMusique;
+	for (var id in this.listeMusiques)
 	{
-		if (curMusique.GetId() === idMusique)
+		curMusique = this.listeMusiques[id];
+		if (curMusique.getId() === idMusique)
 		{
 			curMusique.doValider();
-			console.log(curMusique.isValidee());
-
 		}
 	}
-
+	console.log("[MUSIQUE_MANAGER] : Validation de la musique " +  curMusique.nom + " - " + curMusique.artiste)
 	// référencement dans la persistance
 	persistance.ValiderMusique(idMusique);
 },
@@ -134,7 +137,24 @@ GenerateId : function()
         id += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return id;
+},
+
+// Renvoi les musiques validées
+GetMusiquesValidees : function()
+{
+	// lecture du fichier des musiques
+
+	// renvoi des musique sous forme de LISTE d'objet Musique
+},
+
+// Renvoi les musiques en attente de validation
+GetMusiquesPending : function()
+{
+	// lecture du fichier des musiques
+
+	// renvoi des musique sous forme de LISTE d'objet Musique
 }
+
 };
 
 module.exports = musique_manager;
