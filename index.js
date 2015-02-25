@@ -26,6 +26,10 @@ var ip = require("ip");
 var path = require("path");
 
 var pathToMusic = path.normalize(__dirname+"/musique/");
+<<<<<<< HEAD
+var pathToMusicFile = path.normalize(__dirname+"/persistance/listeMusiques.txt");
+=======
+>>>>>>> 9081565fdbd009f1d64babd0c6ce9a74a6bd03c0
 
 // lien avec les managers =================================================================
 // référencement musique manager
