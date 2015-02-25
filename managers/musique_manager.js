@@ -30,7 +30,7 @@ Load : function()
 Ajouter : function(nom, artiste, genre, passProtection)
 {
 	// Request id 
-	int id = GenerateId();
+	var id = GenerateId();
 
 	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
 	// fait dans index.js
@@ -56,7 +56,7 @@ Valider : function(idMusique)
 		{
 			curMusique.doValider();
 			console.log(curMusique.isValidee());
-			
+
 		}
 	}
 
@@ -83,7 +83,7 @@ Lire : function()
 IsPassValidationOk : function(passEntree)
 {
 	return (this.passProtection === passEntree);
-}
+},
 
 // Pour le test de la chaine de traitement
 Test : function()
