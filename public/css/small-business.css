@@ -2,7 +2,7 @@
 body
 {
     padding-top: 150px;
-    background-color: #eee;
+    background-color: #60BBC5;
 }
 
 .navbar-nav
@@ -11,8 +11,7 @@ body
     float: right;
     margin: 0px;
     padding-top: 30px;
-    height: 80px;
-}
+    height: 100px;}
 
 .navbar-inverse .navbar-nav > li > a
 {
@@ -47,16 +46,4 @@ footer
 {
     padding: 30px 0;
     margin-top: 200px;
-}
-
-@media(min-width:768px)
-{
-    body
-    {
-        padding-top: 150px;
-    }
-    .navbar-fixed-top .navbar-brand
-    {
-        padding: 0;
-    }
 }

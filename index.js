@@ -16,14 +16,14 @@ var demo = {
 
 // requires ================================================================
 // import du framework express
-var express = require("express"),
-  // import du morteur de template express                  
-  mustacheExpress = require('mustache-express');  
-  var http = require("http");
-  var fs = require('fs');
-  var siofu = require("socketio-file-upload");
-  var ip = require("ip");
-  var path = require("path");
+var express = require("express");
+// import du morteur de template express                  
+var mustacheExpress = require('mustache-express');  
+var http = require("http");
+var fs = require('fs');
+var siofu = require("socketio-file-upload");
+var ip = require("ip");
+var path = require("path");
 
 var pathToMusic = path.normalize(__dirname+"/musique/");
 
@@ -76,14 +76,14 @@ app.get('/', function(req, res) {
   console.log("Requested root");
   // envoi des données de la page
   res.render('master', {
-      ip : ip.address(),
-      port : 3000
+    ip : ip.address(),
+    port : 3000
   });
 });
 
 //Route du streaming 
 app.get('/stream.mp3', function(req, res) {
-  
+
   stream_manager.encoder.on("data", function(data) {
     res.write(data);
   });
@@ -101,11 +101,6 @@ console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 // communication client <-> serveur =================================================================
 
-// JORIS : méthoder à appeller pour tester pass modération 
-// -> musique_manager.IsPassValidationOk(passEntree)
-// il renvoi un booléen : true si pass ok
-
-
 io.on('connection', function (socket) {
   var uploader = new siofu;
   uploader.dir = pathToMusic;
@@ -118,16 +113,54 @@ io.on('connection', function (socket) {
     console.log("Genre " + event.file.meta.genre);
   });
 
-//pour charger le formulaire de moderation si mdp valide
-  socket.on('passMode', function(data){
-      console.log(musique_manager.IsPassValidationOk(data));
-    if(musique_manager.IsPassValidationOk(data)){
-      console.log(data);
-        file = path.normalize(__dirname + "/views/moderationForm.mst");
-        fs.readFile(file, "utf8", function(error, filedata){
+  //pour charger le formulaire de moderation si mdp valide
+  socket.on('passMode', function(mdp){
+    if(musique_manager.IsPassValidationOk(mdp)){
+      file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
+      fs.readFile(file, "utf8", function(error, filedata){
         if(error) throw error;
-         socket.emit("passModeOk", filedata.toString());
+        var songsTmp = [];
+        var i=0;
+        musicName = musique_manager.Load();
+        for(var songId in musicName){
+          songsTmp[i] = {name : musicName[songId], id : musicName[songId]};
+          i++;
+        }
+        socket.emit("passModeResult", {template : filedata.toString(), json : {songs : songsTmp}});
       });
     }
+  });
+  
+  socket.on("listenSong", function(id){
+   file = path.normalize(__dirname + "/views/moderationFormValider.mst");
+   fs.readFile(file, "utf8", function(error, filedata){
+    if(error) throw error;
+    socket.emit("listenSongResult", {template : filedata.toString(), json : {songId : id}});
+  });
+ });
+
+  socket.on("getSong", function(id){
+    console.log(id);
+    file = path.normalize(__dirname + "/musique/pending/" + id);
+    fs.readFile(file,"base64", function(error, filedata){
+      if(error) throw error;
+      socket.emit("getSongResult", filedata);
+    });
+  });
+
+  socket.on("moderationValider", function(data){
+    file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
+    fs.readFile(file, "utf8", function(error, filedata){
+      if(error) throw error;
+      var songsTmp = [];
+      var i=0; 
+      musicName = musique_manager.Load();
+      for(var songId in musicName){
+        songsTmp[i] = {name : musicName[songId], id : musicName[songId]};
+        i++;
+      }
+      socket.emit("passModeResult", {template : filedata.toString(), json : {songs : songsTmp}});
+    });
+    console.log(data.id + data.state);
   });
 });

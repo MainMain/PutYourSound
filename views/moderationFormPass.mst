@@ -1,0 +1,12 @@
+<div>
+	<h2>Administration</h2>
+	<div id="moderationReceiver">
+		<form id="formPass">
+			<div class="form-group">
+				<label for="passMode">Mot de passe modération :</label>
+				<input class="form-control" type="password" id="passMode" name="passMode" required>	
+			</div>
+			<input type="submit" class="btn btn-block btn-primary" name="submitPass" id="submitPass" value="Valider">
+		</form>
+	</div>
+</div>

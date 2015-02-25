@@ -1,0 +1,21 @@
+<div class="col-md-12" style="padding: 0;">
+	<audio id="moderationPlayer" src="" style="width: 100%;"></audio>
+	<div class="spinner black" id="spinnerModeration">
+  		<div class="rect1"></div>
+  		<div class="rect2"></div>
+  		<div class="rect3"></div>
+  		<div class="rect4"></div>
+  		<div class="rect5"></div>
+	 </div>
+</div>
+<form id="formValider">
+	<input type="hidden" id="songId" value="{{songId}}">
+	<div class="">
+		<div class="col-md-6" style="padding: 0;">
+			<button type="text" class="btn btn-lg btn-block btn-success" id="modeValider" value="true"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+		</div>
+		<div class="col-md-6" style="padding: 0;">
+			<button type="text" class="btn btn-lg btn-block btn-danger" id="modeRefuser" value="false"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+		</div>
+	</div>
+</form>

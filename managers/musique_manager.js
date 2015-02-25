@@ -40,6 +40,8 @@ Ajouter : function(nom, artiste, genre, passProtection)
 	// Request id 
 	var id = this.GenerateId();
 
+	
+
 	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
 	// fait dans index.js
 

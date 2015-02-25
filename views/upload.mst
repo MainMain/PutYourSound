@@ -1,24 +1,27 @@
 <div>
-	<h2>Uploadez vos sons</h2>
+	<h2>Téléversez vos sons</h2>
 	<form id="formUpload">
 		<fieldset>
-			<label for="songName">Nom de la chanson :<br />
-				<input type="text" id="songName" name="songName" required>
-			</label>
-			<label for="artist">Artiste :<br />
-				<input type="text" id="artist" name="artist" required>
-			</label>
-			<label for="genre">Genre :<br />
-				<input type="text" id="genre" name="genre" required>
-			</label>
-			<label for="file">Fichier :<br />
-				<input type="file" value="Parcourir" dropzone="copy" id="file" name="file" accept="audio/*" required>
-				<br />
-				<input type="submit" value="Uploader" class="btn btn-primary btn-lg" id="submit">
-			</label>
+			<div class="form-group">
+				<label for="songName">Nom de la chanson :</label>
+				<input class="form-control" type="text" id="songName" name="songName" required>
+			</div>
+			<div class="form-group">
+				<label for="artist">Artiste :</label>
+				<input class="form-control" type="text" id="artist" name="artist" required>
+			</div>
+			<div class="form-group">
+				<label for="genre">Genre :</label>
+				<input class="form-control" type="text" id="genre" name="genre" required>
+			</div>
+			<div class="form-group">
+				<label for="file">Fichier :</label>
+				<input class="form-control" type="file" value="Parcourir" dropzone="copy" id="file" name="file" accept="audio/mpeg" required>
+			</div>
+			<input type="submit" value="Téléverser" class="btn btn-block btn-primary" id="submitUpload">	
 		</fieldset>
 	</form>
-	<div class="spinner" id="spinner" hidden>
+	<div class="spinner black" id="spinnerUpload" hidden>
   		<div class="rect1"></div>
   		<div class="rect2"></div>
   		<div class="rect3"></div>
