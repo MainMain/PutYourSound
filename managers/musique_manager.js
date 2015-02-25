@@ -18,19 +18,20 @@ var musique_manager = {
 Load : function()
 {	
 	// chaergemente n mémoire de la liste des musiques
-	this.listeMusiques = persistance.GetMusiques();
+	//this.listeMusiques = persistance.GetMusiques();
 
 	if(!this.pathToMusic)
 		return null;
-
-	return fs.readdirSync(this.pathToMusic);
+	this.listeMusiques = fs.readdirSync(this.pathToMusic);
+	this.listeMusiques.splice(this.listeMusiques.indexOf(".keep"),1);
+	return this.listeMusiques;
 },
 
 // Ajout d'une musique par un utilisateur
 Ajouter : function(nom, artiste, genre, passProtection)
 {
 	// Request id 
-	var id = GenerateId();
+	var id = this.GenerateId();
 
 	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
 	// fait dans index.js
@@ -76,13 +77,12 @@ Supprimer : function()
 
 Lire : function()
 {
-	
 	console.log(vote_manager.GetVoteDominant());
 },
 
 IsPassValidationOk : function(passEntree)
 {
-	return (this.passProtection === passEntree);
+	return (this.mdpValidation === passEntree);
 },
 
 // Pour le test de la chaine de traitement

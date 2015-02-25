@@ -1,10 +1,29 @@
-<div>
-  <h2>Webradio</h2><br/>
-  <span id="infoSong"></span>
-  <audio src="http://{{ip}}:{{port}}/stream.mp3" id="player" autoplay></audio>
-  <div>
-        <button onclick="document.getElementById('player').volume+=0.1">Volume +</button>
-        <button onclick="document.getElementById('player').volume-=0.1">Volume -</button>
-        <button onclick="document.getElementById('player').muted = document.getElementById('player').muted ? false : true">Muter</button>
-  </div>
+<h2>Webradio</h2><br/>
+
+<audio src="http://{{ip}}:{{port}}/stream.mp3" id="player" autoplay></audio>
+<div class="col-md-6">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
+		</div>
+		<div class="col-md-8" id="songTitle">Titre</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="btn-block">
+				
+			<div class="btn-group">
+				<a href="#" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-volume-down"></span></a>
+				<a href="#" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-volume-up"></span></a>
+				<a href="#" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-volume-off"></span></a>
+			</div>
+			</div>
+		</div>
+	</div>
 </div>
