@@ -25,7 +25,7 @@ var express = require("express"),
   var ip = require("ip");
   var path = require("path");
 
-var pathToMusic = path.normalize(__dirname+"/musique/pending/");
+var pathToMusic = path.normalize(__dirname+"/musique/");
 
 // lien avec les managers =================================================================
 // référencement musique manager
@@ -42,7 +42,7 @@ musique_manager.Valider("idAAAA");
 var vote_manager = require("./managers/vote_manager.js");
 vote_manager.Initialiser();
 // référencement stream manager
-//var stream_manager = require("./managers/stream_manager.js");
+var stream_manager = require("./managers/stream_manager.js");
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -66,9 +66,9 @@ app.use(siofu.router);
 //Initialisation du path pour récupérer les musiques
 musique_manager.pathToMusic = pathToMusic;
 
-//stream_manager.pathToMusic = pathToMusic;
-//stream_manager.init();
-//stream_manager.streamSong();
+stream_manager.pathToMusic = pathToMusic;
+stream_manager.init();
+stream_manager.streamSong();
 
 // routes =================================================================
 // route principale (racine)
@@ -107,12 +107,13 @@ console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 
 io.on('connection', function (socket) {
-
   var uploader = new siofu;
   uploader.dir = pathToMusic;
   uploader.listen(socket);
   uploader.on("start", function(event){
-    console.log("Artiste " + event.file.meta.artiste);
+    console.log("Nom de la musique uploadée " + event.file.name);
+    console.log(event);
+    console.log("nom " + event.file.name);
     console.log("Song " + event.file.meta.song);
     console.log("Genre " + event.file.meta.genre);
   });

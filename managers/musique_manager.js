@@ -143,16 +143,34 @@ GenerateId : function()
 GetMusiquesValidees : function()
 {
 	// lecture du fichier des musiques
+	var listeMusiquesValidees = new Array();
+	for (var i = 0; i < this.listeMusiques.length; i++)
+	{
+		if (this.listeMusiques[i].getValidee())
+		{
+			listeMusiquesValidees.push(this.listeMusiques[i]);
+		}
+	}
 
 	// renvoi des musique sous forme de LISTE d'objet Musique
+	return listeMusiquesValidees;
 },
 
 // Renvoi les musiques en attente de validation
 GetMusiquesPending : function()
 {
 	// lecture du fichier des musiques
+	var listeMusiquesValidees = new Array();
+	for (var i = 0; i < this.listeMusiques.length; i++)
+	{
+		if (!this.listeMusiques[i].getValidee())
+		{
+			listeMusiquesValidees.push(this.listeMusiques[i]);
+		}
+	}
 
 	// renvoi des musique sous forme de LISTE d'objet Musique
+	return listeMusiquesValidees;
 }
 
 };

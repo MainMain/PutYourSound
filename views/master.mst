@@ -84,7 +84,7 @@
 		<footer>
 			<div class="row">
 				<div class="col-lg-12">
-					<p>Copyright &copy; Licorns&Co. 2042</p>
+					<p>Copyright &copy; Licornes&Co. 2042</p>
 				</div>
 			</div>
 		</footer>
@@ -109,17 +109,14 @@
 		siofu.addEventListener("start", function(event){
 			$("#spinner").show();
 			$("#formUpload").hide();
-			event.file.meta.artiste = "world";
-			event.file.meta.song = "songName";
-			event.file.meta.genre = "genre";
+			event.file.meta.artiste = $("#artist").val();
+			event.file.meta.song = $("#songName").val();
+			event.file.meta.genre = $("#genre").val();
 		});
 
 		siofu.addEventListener("complete", function(event){
 			$("#spinner").hide();
 			$("#formUpload").show();
-			event.file.meta.artiste = $("#artist").val();
-			event.file.meta.song = $("#songName").val();
-			event.file.meta.genre = $("#genre").val();
 		});
 
 	$("#submitPass").click(function(){
