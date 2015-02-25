@@ -26,10 +26,6 @@ var ip = require("ip");
 var path = require("path");
 
 var pathToMusic = path.normalize(__dirname+"/musique/");
-<<<<<<< HEAD
-var pathToMusicFile = path.normalize(__dirname+"/persistance/listeMusiques.txt");
-=======
->>>>>>> 9081565fdbd009f1d64babd0c6ce9a74a6bd03c0
 
 // lien avec les managers =================================================================
 // référencement musique manager
@@ -104,12 +100,9 @@ io.on('connection', function (socket) {
   var uploader = new siofu;
   uploader.dir = pathToMusic;
   uploader.listen(socket);
-  uploader.on("start", function(event){
-    console.log("Nom de la musique uploadée " + event.file.name);
-    console.log(event);
-    console.log("nom " + event.file.name);
-    console.log("Song " + event.file.meta.song);
-    console.log("Genre " + event.file.meta.genre);
+  uploader.on("saved", function(event){
+    console.log("%j",event.file.base)
+    musique_manager.Ajouter(event.file.base, event.file.meta.song, event.file.meta.artiste, event.file.meta.genre, "lol");
   });
 
   //pour charger le formulaire de moderation si mdp valide

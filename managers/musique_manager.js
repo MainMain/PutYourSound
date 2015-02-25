@@ -34,13 +34,33 @@ Initialiser : function(pathToMusic)
 },
 
 // Ajout d'une musique par un utilisateur
-Ajouter : function(nom, artiste, genre, passProtection)
+Ajouter : function(fileName, nom, artiste, genre, passProtection)
 {
 	console.log("Ajouter");
 	// Request id 
 	var id = this.GenerateId();
 
+	var nomClean = nom.replace(/ /g, '_').replace('-','_');
+
+	var artisteClean = artiste.replace(/ /g, '_').replace('-','_');
+
+	console.log("current :" +this.pathToMusic + fileName + '.mp3' );
+	var fileNameFinal = id + '-' + nomClean + '-' + artisteClean + '-' + genre + '.mp3'
+	console.log("new :" +this.pathToMusic + fileNameFinal);
+
+	var that = this;
+	fs.renameSync(this.pathToMusic + fileName + '.mp3', this.pathToMusic + fileNameFinal, function(err){
+		if (err) throw err;
+		var nlleMusique = new Musique(id, nomClean, artisteClean, genre, passProtection, false);
+
+		that.listeMusiques.push(nlleMusique);
 	
+		// le bon log
+		console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
+	
+		// référencement dans la persistance
+		persistance.AjouterMusique(nlleMusique);
+	});
 
 	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
 	// fait dans index.js
@@ -49,15 +69,15 @@ Ajouter : function(nom, artiste, genre, passProtection)
 	// fait dans index.je
 
 	// ajout dans la liste de musique (attribut)
-	var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
-
-	this.listeMusiques.push(nlleMusique);
-
-	// le bon log
-	console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
-
-	// référencement dans la persistance
-	persistance.AjouterMusique(nlleMusique);
+	//var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
+//
+	//this.listeMusiques.push(nlleMusique);
+//
+	//// le bon log
+	//console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
+//
+	//// référencement dans la persistance
+	//persistance.AjouterMusique(nlleMusique);
 },
 
 // Validation d'une musique par un modérateur
