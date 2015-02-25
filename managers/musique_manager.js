@@ -18,7 +18,7 @@ var musique_manager = {
 Load : function()
 {	
 	// chaergemente n mémoire de la liste des musiques
-	this.listeMusiques = persistance.GetMusiques();
+	//this.listeMusiques = persistance.GetMusiques();
 
 	if(!this.pathToMusic)
 		return null;
