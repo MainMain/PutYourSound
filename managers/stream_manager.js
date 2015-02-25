@@ -23,8 +23,9 @@ var stream_manager = {
   },
 
   streamSong : function(){
-
-    var track = this.pathToMusic + musique_manager.Load()[vote_manager.GetVoteDominant()];
+    var track = this.pathToMusic + musique_manager.GetMusiqueAleatoire().getNomFicher();
+   
+   //var track = this.pathToMusic + musique_manager.GetMusiqueAleatoire();
 
     console.log("Choosed : "+ track);
     var that = this;

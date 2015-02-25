@@ -40,6 +40,12 @@ var Musique = (function() {
 		isValidee : function(){
 			return this.validee;
 		},
+
+		getNomFicher : function()
+		{
+			// Format du nom fichier 001-Titre-Artiste
+			return this.id+"-"+this.nom+"-"+this.artiste+".mp3";
+		},
 		
 		doValider : function() {
 			this.validee = true;

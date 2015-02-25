@@ -30,10 +30,19 @@ var pathToMusic = path.normalize(__dirname+"/musique/pending/");
 // lien avec les managers =================================================================
 // référencement musique manager
 var musique_manager = require("./managers/musique_manager.js");
+// intialisation du manager (chargement en mémoire des musiques)
+musique_manager.Initialiser(pathToMusic);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+musique_manager.Valider("idAAAA");
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
+vote_manager.Initialiser();
 // référencement stream manager
-var stream_manager = require("./managers/stream_manager.js");
+//var stream_manager = require("./managers/stream_manager.js");
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -59,7 +68,8 @@ musique_manager.pathToMusic = pathToMusic;
 
 stream_manager.pathToMusic = pathToMusic;
 stream_manager.init();
-//stream_manager.streamSong();
+
+stream_manager.streamSong();
 
 // routes =================================================================
 // route principale (racine)

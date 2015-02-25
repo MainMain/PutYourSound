@@ -1,11 +1,24 @@
+var Musique = require("../model/musique.js")
+
 // Constructeur
 function persistance_file(){}
 
 // Attributs
-this.pathToFile = "";
+var persistance_file = {
+	pathToMusicFile : "",
+	pathToMusic : undefined,
+
+// Init
+Initialiser : function(pathToMusic)
+{
+	// affectation chemin
+	this.pathToMusic = pathToMusic;
+
+	console.log("[PERSISTANCE] : chemin musique initialisé à " + this.pathToMusic);
+},
 
 // Renvoi les musiques validées
-persistance_file.GetMusiquesValidees = function()
+GetMusiquesValidees : function()
 {
 	// lecture du fichier des musiques
 
@@ -13,7 +26,7 @@ persistance_file.GetMusiquesValidees = function()
 },
 
 // Renvoi les musiques en attente de validation
-persistance_file.GetMusiquesPending = function()
+GetMusiquesPending : function()
 {
 	// lecture du fichier des musiques
 
@@ -21,23 +34,53 @@ persistance_file.GetMusiquesPending = function()
 },
 
 // Renvoi toutes les musiques
-persistance_file.GetMusiques = function()
-{
+GetMusiques : function()
+{	
 	// lecture du fichier des musiques
+	// **création d'une liste de musique pour test**
+	var listeMusiques = new Array();
+	var music1 = new Musique("idAAAA", "a_part_of_you", "mainmain", "trance", "", false);
+	
+
+	//ajout à la liste qu'on va renvoyer
+	listeMusiques.push(music1);
+	console.log(music1);
+
+	// vérifier que la musique lue dans le fichier existe bien ! 
+	/*
+	if(!this.pathToMusic)
+		return null;
+	this.listeMusiques = fs.readdirSync(this.pathToMusic);
+	this.listeMusiques.splice(this.listeMusiques.indexOf(".keep"),1);
+	return this.listeMusiques;*/
+
+	// le bon log
+	console.log("[PERSISTANCE] : Chargement de (" + listeMusiques.length + ") musiques");
 
 	// renvoi des musique sous forme de LISTE d'objet Musique
+	return listeMusiques;
 },
 
 // Renvoi tout les genres différents
-persistance_file.GetGenres = function()
+GetGenres : function()
 {
+	var listeGenre = new Array();
+	
+	// pour tests
+	listeGenre.push("rock");
+	listeGenre.push("classique");
+	listeGenre.push("trance");
+	listeGenre.push("métal");
+	listeGenre.push("alternatif");
+	listeGenre.push("neo");
 	// lecture du fichier des genres
 
 	// renvoi des musique sous forme de LISTE de sting
+	return listeGenre;
 },
 
 // Enregistrement la musiques qui vient d'être validée
-persistance_file.AjouterMusique = function(nlleMusique)
+AjouterMusique : function(nlleMusique)
 {
 	// nlleMusique -> objet musique avec les infos sur la nouvelle musique
 
@@ -47,7 +90,7 @@ persistance_file.AjouterMusique = function(nlleMusique)
 },
 
 // Validation de la musique
-persistance_file.ValiderMusique = function(nlleMusique)
+ValiderMusique : function(idMusique)
 {
 	// recherche de la ligne dans le fichier
 
@@ -59,7 +102,7 @@ persistance_file.ValiderMusique = function(nlleMusique)
 },
 
 // Validation de la musique
-persistance_file.SupprimerMusique = function(nlleMusique)
+SupprimerMusique : function(nlleMusique)
 {
 	// recherche de la ligne dans le fichier
 
@@ -69,10 +112,10 @@ persistance_file.SupprimerMusique = function(nlleMusique)
 },
 
 // Pour le test de la chaine de traitement
-persistance_file.Test = function()
+Test : function()
 {
 	console.log("[persistance_file] : OK");
 
 }
-
+};
 module.exports = persistance_file;
