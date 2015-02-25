@@ -21,10 +21,6 @@ var express = require("express"),
   mustacheExpress = require('mustache-express');  
   var http = require("http");
   var fs = require('fs');
-  var child_process = require("child_process");
-  var Throttle = require('throttle');
-  var probe = require('node-ffprobe');
-  var lame = require('lame');
   var siofu = require("socketio-file-upload");
   var ip = require("ip");
   var path = require("path");
@@ -36,6 +32,8 @@ var pathToMusic = path.normalize(__dirname+"/musique/pending/");
 var musique_manager = require("./managers/musique_manager.js");
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
+// référencement stream manager
+var stream_manager = require("./managers/stream_manager.js");
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -59,52 +57,9 @@ app.use(siofu.router);
 //Initialisation du path pour récupérer les musiques
 musique_manager.pathToMusic = pathToMusic;
 
-// Objet permettent de streamer une musique donnée
-// JORIS : Pourquoi ne pas créer un "stream_manager" (découpage en couche)?
-var streamer = {
-  encoder : undefined ,
-
-  decoder : undefined ,
-
-  init : function(){
-    this.encoder = lame.Encoder({channels: 2, bitDepth: 16, sampleRate: 44100});
-    this.decoder = lame.Decoder();
-    var that = this;
-    this.decoder.on('format', function(format) {
-      that.decoder.pipe(that.encoder);
-    });
-  },
-
-  streamSong : function(){
-
-    var track = pathToMusic + musique_manager.Load()[vote_manager.GetVoteDominant()];
-
-    console.log("Choosed : "+track);
-    var that = this;
-
-    probe(track, function(err, probeData) {
-      //Bitrate de la chanson
-      var bit_rate = probeData.format.bit_rate;
-      //On lit le mp3
-      var currentStream = fs.createReadStream(track);
-      //On applique un ratio a la lecutre pour une lecture continue
-      bit_rate = (bit_rate/10) * 1.4;
-      throttle = new Throttle(bit_rate);
-      currentStream.pipe(throttle);
-      //On remonte les données
-      throttle.on('data', function(data){
-        that.decoder.write(data);
-      });
-      //Fin du morceau on en demande un autre
-      throttle.on('end', function(){
-        that.streamSong();
-      });
-    });
-  },
-};
-
-streamer.init();
-streamer.streamSong();
+stream_manager.pathToMusic = pathToMusic;
+stream_manager.init();
+stream_manager.streamSong();
 
 // routes =================================================================
 // route principale (racine)
@@ -120,11 +75,11 @@ app.get('/', function(req, res) {
 //Route du streaming 
 app.get('/stream.mp3', function(req, res) {
   
-  streamer.encoder.on("data", function(data) {
+  stream_manager.encoder.on("data", function(data) {
     res.write(data);
   });
 
-  streamer.encoder.on('end', function(){
+  stream_manager.encoder.on('end', function(){
     res.end();
   });
 
