@@ -25,8 +25,8 @@
 	<!-- NavBar -->
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 		<div class="container">
-			<div class="navbar-header">
-				<img src="imgs/PYS_small.png" alt="">
+			<div class="navbar-brand">
+				<img src="imgs/PYS_small.png" style="width:100%;" alt="">
 			</div>
 			<ul class="nav navbar-nav">
 				<li>
@@ -50,7 +50,7 @@
 						<br/>
 						- Créé par et pour les amateurs de nouvelles sonorités.<br/><br/>
 						- Une nouvelle plateforme d'écoute musicale indépendante.<br/><br/>
-						- Uploadez vos créations et partagez-les avec la communauté.<br/><br/>
+						- Téléversez vos créations et partagez-les avec la communauté.<br/><br/>
 					</b>
 				</p>
 			</div>
@@ -62,7 +62,7 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="well text-center">
-					Merci de noter que tout fichier présentant une violation du droit d'auteur entrainera sa suppression systématique ainsi qu'un bannissement définitif. lol
+					Merci de noter que tout fichier présentant une violation du droit d'auteur entrainera sa suppression systématique ainsi qu'un bannissement définitif.
 				</div>
 			</div>
 		</div>
@@ -77,14 +77,16 @@
 				<p>Choisissez le style de musique à passer ensuite sur notre webradio.</p>
 			</div>
 			<!-- Admin -->
-			<div id="moderation" class="col-md-4">{{>moderationPass}}</div>
+			<div id="moderation" class="col-md-4">
+				{{>moderationFormPass}}
+			</div>
 		</div>
 
 		<!-- Footer -->
 		<footer>
 			<div class="row">
 				<div class="col-lg-12">
-					<p>Copyright &copy; Licorns&Co. 2042</p>
+					<p>Copyright &copy; Licornes&Co. 2042</p>
 				</div>
 			</div>
 		</footer>
@@ -104,35 +106,79 @@
 		var socket = io.connect('http://{{ip}}:{{port}}');
 		var siofu = new SocketIOFileUpload(socket);
 
-		siofu.listenOnSubmit(document.getElementById("submit"), document.getElementById("file"));
+		$("#formUpload").submit(function(e){e.preventDefault()});
+		
+		siofu.listenOnSubmit(document.getElementById("submitUpload"), document.getElementById("file"));
 
 		siofu.addEventListener("start", function(event){
 			$("#spinner").show();
 			$("#formUpload").hide();
-			event.file.meta.artiste = "world";
-			event.file.meta.song = "songName";
-			event.file.meta.genre = "genre";
-		});
-
-		siofu.addEventListener("complete", function(event){
-			$("#spinner").hide();
-			$("#formUpload").show();
 			event.file.meta.artiste = $("#artist").val();
 			event.file.meta.song = $("#songName").val();
 			event.file.meta.genre = $("#genre").val();
 		});
 
-	$("#submitPass").click(function(){
+		siofu.addEventListener("complete", function(event){
+			$("#spinner").hide();
+			$("#formUpload").show();
+		});
+
+	$("#formPass").submit(function(e){
+		e.preventDefault();
 		var pass = $("#passMode").val();
 		if(pass)
 			socket.emit("passMode", pass);
 	});
 
-	socket.on("passModeOk", function(data){
+	//Resultat de l'envoi du mdp d'authentification
+	//Chargement du template pour choisir la chanson a ecouter
+	socket.on("passModeResult", function(data){
 		var moderation = $('#moderationReceiver');
-		var rendered = Mustache.render(data);
+		var rendered = Mustache.render(data.template, data.json);
 		moderation.html(rendered);
+		updateModerationEcouter();
 	});
+
+	//Resultat de la demande de chanson a ecouter
+	//Chargement du formulaire de validation
+	socket.on("listenSongResult", function(data){
+		var moderation = $('#moderationReceiver');
+		var rendered = Mustache.render(data.template, data.json);
+		moderation.html(rendered);
+		updateModerationValider();
+	});
+
+	//Charge l'audio dans le player
+	socket.on("getSongResult", function(data){
+		var player = $('#moderationPlayer');
+		$("#spinnerModeration").hide();
+		player.attr('controls',"");
+		player.attr('src',"data:audio/mpeg;base64," + data);
+	});
+
+	//Pour mettre a jour les connections entre les balises et le js
+	function updateModerationEcouter(){
+		$("#formEcouter").submit(function(e){
+			e.preventDefault();
+			var selected =  $("#songs option:selected").val();
+			socket.emit('listenSong', selected);
+		});
+	}
+
+	function updateModerationValider(){
+		var songId = $("#songId").val();
+		socket.emit('getSong', songId);
+		$("#formValider").submit(function(e){e.preventDefault();});
+		$("#modeValider").click(function(e){
+			socket.emit("moderationValider", {id : songId, state : $(this).val()});
+		});
+
+		$("#modeRefuser").click(function(e){
+			socket.emit("moderationValider", {id : songId, state : $(this).val()});
+		});
+
+	};
+
 });
 	
 </script>

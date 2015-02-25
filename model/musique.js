@@ -11,7 +11,7 @@ var Musique = (function() {
 		this.nom = nom;
 		this.artiste = artiste;
 		this.genre = genre;
-		this.passProtection = passProtection;
+		this.passProtection = undefined;
 		this.validee = validee;
 	}
 

@@ -1,7 +1,0 @@
-<h2>Administration</h2>
-<div id="moderationReceiver">
-	<label for="passMode">Mot de passe modération :<br />
-		<input type="password" id="passMode" name="passMode" required>
-	</label>
-	<button class="btn btn-primary btn-lg" id="submitPass">Valider</button>
-</div>

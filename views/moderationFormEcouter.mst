@@ -1,0 +1,10 @@
+<form id="formEcouter">
+	<div class="form-group">
+		<select class="form-control" id="songs" >
+			{{#songs}}
+			<option value="{{id}}">{{name}}</option>
+			{{/songs}}
+		</select>	
+	</div>
+	<input type="submit" class="btn btn-block btn-primary" name="submitEcouter" id="submitEcouter" value="&Eacute;couter">
+</form>

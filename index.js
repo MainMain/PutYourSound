@@ -16,17 +16,20 @@ var demo = {
 
 // requires ================================================================
 // import du framework express
-var express = require("express"),
-  // import du morteur de template express                  
-  mustacheExpress = require('mustache-express');  
-  var http = require("http");
-  var fs = require('fs');
-  var siofu = require("socketio-file-upload");
-  var ip = require("ip");
-  var path = require("path");
+var express = require("express");
+// import du morteur de template express                  
+var mustacheExpress = require('mustache-express');  
+var http = require("http");
+var fs = require('fs');
+var siofu = require("socketio-file-upload");
+var ip = require("ip");
+var path = require("path");
 
 var pathToMusic = path.normalize(__dirname+"/musique/");
+<<<<<<< HEAD
 var pathToMusicFile = path.normalize(__dirname+"/persistance/listeMusiques.txt");
+=======
+>>>>>>> 9081565fdbd009f1d64babd0c6ce9a74a6bd03c0
 
 // lien avec les managers =================================================================
 // référencement musique manager
@@ -43,7 +46,7 @@ musique_manager.Valider("idAAAA");
 var vote_manager = require("./managers/vote_manager.js");
 vote_manager.Initialiser();
 // référencement stream manager
-//var stream_manager = require("./managers/stream_manager.js");
+var stream_manager = require("./managers/stream_manager.js");
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -67,9 +70,9 @@ app.use(siofu.router);
 //Initialisation du path pour récupérer les musiques
 musique_manager.pathToMusic = pathToMusic;
 
-//stream_manager.pathToMusic = pathToMusic;
-//stream_manager.init();
-//stream_manager.streamSong();
+stream_manager.pathToMusic = pathToMusic;
+stream_manager.init();
+stream_manager.streamSong();
 
 // routes =================================================================
 // route principale (racine)
@@ -77,14 +80,14 @@ app.get('/', function(req, res) {
   console.log("Requested root");
   // envoi des données de la page
   res.render('master', {
-      ip : ip.address(),
-      port : 3000
+    ip : ip.address(),
+    port : 3000
   });
 });
 
 //Route du streaming 
 app.get('/stream.mp3', function(req, res) {
-  
+
   stream_manager.encoder.on("data", function(data) {
     res.write(data);
   });
@@ -102,32 +105,66 @@ console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 // communication client <-> serveur =================================================================
 
-// JORIS : méthoder à appeller pour tester pass modération 
-// -> musique_manager.IsPassValidationOk(passEntree)
-// il renvoi un booléen : true si pass ok
-
-
 io.on('connection', function (socket) {
-
   var uploader = new siofu;
   uploader.dir = pathToMusic;
   uploader.listen(socket);
   uploader.on("start", function(event){
-    console.log("Artiste " + event.file.meta.artiste);
+    console.log("Nom de la musique uploadée " + event.file.name);
+    console.log(event);
+    console.log("nom " + event.file.name);
     console.log("Song " + event.file.meta.song);
     console.log("Genre " + event.file.meta.genre);
   });
 
-//pour charger le formulaire de moderation si mdp valide
-  socket.on('passMode', function(data){
-      console.log(musique_manager.IsPassValidationOk(data));
-    if(musique_manager.IsPassValidationOk(data)){
-      console.log(data);
-        file = path.normalize(__dirname + "/views/moderationForm.mst");
-        fs.readFile(file, "utf8", function(error, filedata){
+  //pour charger le formulaire de moderation si mdp valide
+  socket.on('passMode', function(mdp){
+    if(musique_manager.IsPassValidationOk(mdp)){
+      file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
+      fs.readFile(file, "utf8", function(error, filedata){
         if(error) throw error;
-         socket.emit("passModeOk", filedata.toString());
+        var songsTmp = [];
+        var i=0;
+        musicName = musique_manager.Load();
+        for(var songId in musicName){
+          songsTmp[i] = {name : musicName[songId], id : musicName[songId]};
+          i++;
+        }
+        socket.emit("passModeResult", {template : filedata.toString(), json : {songs : songsTmp}});
       });
     }
+  });
+  
+  socket.on("listenSong", function(id){
+   file = path.normalize(__dirname + "/views/moderationFormValider.mst");
+   fs.readFile(file, "utf8", function(error, filedata){
+    if(error) throw error;
+    socket.emit("listenSongResult", {template : filedata.toString(), json : {songId : id}});
+  });
+ });
+
+  socket.on("getSong", function(id){
+    console.log(id);
+    file = path.normalize(__dirname + "/musique/pending/" + id);
+    fs.readFile(file,"base64", function(error, filedata){
+      if(error) throw error;
+      socket.emit("getSongResult", filedata);
+    });
+  });
+
+  socket.on("moderationValider", function(data){
+    file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
+    fs.readFile(file, "utf8", function(error, filedata){
+      if(error) throw error;
+      var songsTmp = [];
+      var i=0; 
+      musicName = musique_manager.Load();
+      for(var songId in musicName){
+        songsTmp[i] = {name : musicName[songId], id : musicName[songId]};
+        i++;
+      }
+      socket.emit("passModeResult", {template : filedata.toString(), json : {songs : songsTmp}});
+    });
+    console.log(data.id + data.state);
   });
 });
