@@ -25,7 +25,8 @@ var express = require("express"),
   var ip = require("ip");
   var path = require("path");
 
-var pathToMusic = path.normalize(__dirname+"/musique/pending/");
+var pathToMusic = path.normalize(__dirname+"/musique/");
+var pathToMusicFile = path.normalize(__dirname+"/persistance/listeMusiques.txt");
 
 // lien avec les managers =================================================================
 // référencement musique manager

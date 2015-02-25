@@ -1,37 +1,24 @@
 var Musique = require("../model/musique.js")
-
+var fs = require("fs");
 // Constructeur
 function persistance_file(){}
 
 // Attributs
 var persistance_file = {
-	pathToMusicFile : "",
+	pathToMusicFile : undefined,
 	pathToMusic : undefined,
+	
 
 // Init
 Initialiser : function(pathToMusic)
 {
-	// affectation chemin
+	// affectation chemins
 	this.pathToMusic = pathToMusic;
+	this.pathToMusicFile = pathToMusic + "../persistance/listeMusiques.txt";
 
 	console.log("[PERSISTANCE] : chemin musique initialisé à " + this.pathToMusic);
 },
 
-// Renvoi les musiques validées
-GetMusiquesValidees : function()
-{
-	// lecture du fichier des musiques
-
-	// renvoi des musique sous forme de LISTE d'objet Musique
-},
-
-// Renvoi les musiques en attente de validation
-GetMusiquesPending : function()
-{
-	// lecture du fichier des musiques
-
-	// renvoi des musique sous forme de LISTE d'objet Musique
-},
 
 // Renvoi toutes les musiques
 GetMusiques : function()
@@ -75,40 +62,110 @@ GetGenres : function()
 	listeGenre.push("neo");
 	// lecture du fichier des genres
 
-	// renvoi des musique sous forme de LISTE de sting
+	// renvoi des musique sous forme de LISTE de string
 	return listeGenre;
 },
 
 // Enregistrement la musiques qui vient d'être validée
 AjouterMusique : function(nlleMusique)
 {
+	console.log("[persistance_file] : Ajout de la musique : "+nlleMusique.getNom());
 	// nlleMusique -> objet musique avec les infos sur la nouvelle musique
-
 	// ajout d'une ligne dans le fichier des musiques
-
+	var contenu = fs.readFileSync(this.pathToMusicFile, "UTF-8");
+	contenu = contenu+"\r"+nlleMusique.getId()+"-"+nlleMusique.getNom()+"-"+nlleMusique.getArtiste()+"-"+nlleMusique.getGenre()+"-"+nlleMusique.isValidee();
+	fs.writeFileSync(this.pathToMusicFile,contenu, "UTF-8");
 	// renvoi 1 si enregistrement OK
+	return 1;
 },
 
 // Validation de la musique
 ValiderMusique : function(idMusique)
 {
 	// recherche de la ligne dans le fichier
+	var contenu = fs.readFileSync(this.pathToMusicFile, "UTF-8");
+	var contenu2 ;
+	var contenuFinal;
+	var temp = new Array();
+	var ligne;
+	var listeInfos = new Array();
+	var music ;
+	if(contenu.indexOf(idMusique,0) > -1)
+	{
+		console.log("[persistance_file] : Musique trouvee "+idMusique);
+		contenu2 = contenu.substring(contenu.indexOf(idMusique,0));
+		temp = contenu2.split("-");
+		console.log("[persistance_file] : -------> "+ temp[4]);
+		// suppression de cette ligne
+		if(temp[4] !== 'true')
+		{
+			console.log("[persistance_file] : La musique "+idMusique+" va etre supprimée");
+			ligne = contenu.substring(contenu.indexOf(idMusique,0),contenu.indexOf("false",contenu.indexOf(idMusique,0))+5);
+			console.log("[persistance_file] : ligne à supprimer : "+ligne);
+			//on recupere les infos de la musique pour les mettre dans un objet musique
+			listeInfos = ligne.split("-");
+			console.log("[persistance_file] : -------> "+listeInfos);
+			music = new Musique(listeInfos[0],listeInfos[1],listeInfos[2],listeInfos[3],"",listeInfos[4]);
+			console.log("[persistance_file] : La nouvelle musique : "+music.getNom());
+			//TODO supprimer la ligne
+			contenuFinal = contenu.substring(0,contenu.indexOf(idMusique,0))+contenu.substring(contenu.indexOf("false",contenu.indexOf(idMusique,0))+5);
+			fs.writeFileSync(this.pathToMusicFile,contenuFinal, "UTF-8");
+			// appeler la fonction AjouterMusique()
+			this.AjouterMusique(music);
+			// renvoi 1 si enregistrement OK
+			return 1;
 
-	// suppression de cette ligne
+		}
+		else
+		{
+			console.log("[persistance_file] : Ce fichier est déjà validé");
+			return -1;
+		}
+	}
+	else 
+	{
+		console.log("[persistance_file] : Musique non trouvée "+idMusique);
+		return -1;
+	}
+	
 
-	// apeller la fonction AjouterMusique()
 
-	// renvoi 1 si enregistrement OK
+	
 },
 
-// Validation de la musique
-SupprimerMusique : function(nlleMusique)
+// Suppression de la musique
+SupprimerMusique : function(idMusique)
 {
 	// recherche de la ligne dans le fichier
+	var contenu = fs.readFileSync(this.pathToMusicFile, "UTF-8");
+	var contenu2;
+	var contenuFinal;
+	var temp = new Array();
+	if(contenu.indexOf(idMusique,0) > -1)
+	{
+		contenu2 = contenu.substring(contenu.indexOf(idMusique,0));
+		temp = contenu2.split("-");
+		// suppression de cette ligne
+		if(temp[4] !== 'true')
+		{
+			contenuFinal = contenu.substring(0,contenu.indexOf(idMusique,0))+contenu.substring(contenu.indexOf("false",contenu.indexOf(idMusique,0))+5);
+			fs.writeFileSync(this.pathToMusicFile,contenuFinal, "UTF-8");
+		}
+		else
+		{
+			contenuFinal = contenu.substring(0,contenu.indexOf(idMusique,0))+contenu.substring(contenu.indexOf("true",contenu.indexOf(idMusique,0))+4);
+			fs.writeFileSync(this.pathToMusicFile,contenuFinal, "UTF-8");
+		}
+		// renvoi 1 si enregistrement OK
+		return 1;
+	}
+	else
+	{
+		console.log("[persistance_file] : Musique non trouvée");
+		return -1;
+	}
 
-	// suppression de cette ligne
-
-	// renvoi 1 si enregistrement OK
+	
 },
 
 // Pour le test de la chaine de traitement
