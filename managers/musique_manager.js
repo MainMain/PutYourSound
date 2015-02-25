@@ -51,6 +51,8 @@ Ajouter : function(nom, artiste, genre, passProtection)
 	// ajout dans la liste de musique (attribut)
 	var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
 
+	this.listeMusiques.push(nlleMusique);
+
 	// le bon log
 	console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
 
@@ -148,9 +150,26 @@ GetMusiquesValidees : function()
 	var listeMusiquesValidees = new Array();
 	for (var i = 0; i < this.listeMusiques.length; i++)
 	{
-		if (this.listeMusiques[i].getValidee())
+		if (this.listeMusiques[i].isValidee())
 		{
 			listeMusiquesValidees.push(this.listeMusiques[i]);
+		}
+	}
+
+	// renvoi des musique sous forme de LISTE d'objet Musique
+	return listeMusiquesValidees;
+},
+
+// Renvoi les musiques validées
+GetNomMusiquesValidees : function()
+{
+	// lecture du fichier des musiques
+	var listeMusiquesValidees = new Array();
+	for (var i = 0; i < this.listeMusiques.length; i++)
+	{
+		if (this.listeMusiques[i].isValidee())
+		{
+			listeMusiquesValidees.push(this.listeMusiques[i].nom);
 		}
 	}
 
@@ -162,17 +181,44 @@ GetMusiquesValidees : function()
 GetMusiquesPending : function()
 {
 	// lecture du fichier des musiques
-	var listeMusiquesValidees = new Array();
+	var listeMusiquesPending = new Array();
 	for (var i = 0; i < this.listeMusiques.length; i++)
 	{
-		if (!this.listeMusiques[i].getValidee())
+		if (!this.listeMusiques[i].isValidee())
 		{
-			listeMusiquesValidees.push(this.listeMusiques[i]);
+			listeMusiquesPending.push(this.listeMusiques[i]);
 		}
 	}
 
 	// renvoi des musique sous forme de LISTE d'objet Musique
-	return listeMusiquesValidees;
+	return listeMusiquesPending;
+},
+
+// Renvoi les titres musiques en attente de validation
+GetNomMusiquesPending : function()
+{
+	// lecture du fichier des musiques
+	var listeMusiquesPending = new Array();
+	for (var i = 0; i < this.listeMusiques.length; i++)
+	{
+		if (!this.listeMusiques[i].isValidee())
+		{
+			listeMusiquesPending.push({ id : this.listeMusiques[i].id, name : this.listeMusiques[i].nom});
+		}
+	}
+	console.log(listeMusiquesPending.length);
+	// renvoi des musique sous forme de LISTE d'objet Musique
+	return listeMusiquesPending;
+},
+
+GetNomFichierForId : function(id){
+	for (var i = 0; i < this.listeMusiques.length; i++)
+	{
+		if (this.listeMusiques[i].id === id)
+		{
+			return this.listeMusiques[i].getNomFicher();
+		}
+	}
 }
 
 };

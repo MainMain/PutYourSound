@@ -33,11 +33,6 @@ var musique_manager = require("./managers/musique_manager.js");
 // intialisation du manager (chargement en mémoire des musiques)
 musique_manager.Initialiser(pathToMusic);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-musique_manager.Valider("idAAAA");
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
 vote_manager.Initialiser();
@@ -119,14 +114,8 @@ io.on('connection', function (socket) {
       file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
       fs.readFile(file, "utf8", function(error, filedata){
         if(error) throw error;
-        var songsTmp = [];
-        var i=0;
-        musicName = musique_manager.Load();
-        for(var songId in musicName){
-          songsTmp[i] = {name : musicName[songId], id : musicName[songId]};
-          i++;
-        }
-        socket.emit("passModeResult", {template : filedata.toString(), json : {songs : songsTmp}});
+        var musics = musique_manager.GetNomMusiquesPending();
+        socket.emit("passModeResult", {template : filedata.toString(), json : {songs : musics}});
       });
     }
   });
@@ -140,8 +129,7 @@ io.on('connection', function (socket) {
  });
 
   socket.on("getSong", function(id){
-    console.log(id);
-    file = path.normalize(__dirname + "/musique/pending/" + id);
+    var file = pathToMusic + musique_manager.GetNomFichierForId(id);
     fs.readFile(file,"base64", function(error, filedata){
       if(error) throw error;
       socket.emit("getSongResult", filedata);
@@ -149,17 +137,18 @@ io.on('connection', function (socket) {
   });
 
   socket.on("moderationValider", function(data){
+
+    if(data.state){
+      musique_manager.Valider(data.id);
+    }else{
+      musique_manager.Supprimer(data.id);
+    }
+
     file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
     fs.readFile(file, "utf8", function(error, filedata){
       if(error) throw error;
-      var songsTmp = [];
-      var i=0; 
-      musicName = musique_manager.Load();
-      for(var songId in musicName){
-        songsTmp[i] = {name : musicName[songId], id : musicName[songId]};
-        i++;
-      }
-      socket.emit("passModeResult", {template : filedata.toString(), json : {songs : songsTmp}});
+      var musics = musique_manager.GetNomMusiquesPending();
+      socket.emit("passModeResult", {template : filedata.toString(), json : {songs : musics}});
     });
     console.log(data.id + data.state);
   });
