@@ -1,3 +1,5 @@
+var Musique = require("../model/musique.js")
+
 // Constructeur
 function persistance_file(){}
 
@@ -22,10 +24,25 @@ persistance_file.GetMusiquesPending = function()
 
 // Renvoi toutes les musiques
 persistance_file.GetMusiques = function()
-{
+{	
+	// liste musique simulée
+
+	// création d'une liste de musique pour test
+	var listeMusiques = new Array();
+	var music1 = new Musique("a1", "nom1", "artiste1", "genre1", false);
+	var music2 = new Musique("a2", "nom2", "artiste2", "genre2", false);
+	var music3 = new Musique("a3", "nom3", "artiste3", "genre3", false);
+	listeMusiques.push(music1);
+	listeMusiques.push(music2);
+	listeMusiques.push(music3);
+
 	// lecture du fichier des musiques
 
+	// le bon log
+	console.log("[PERSISTANCE] : Chargement de (" + listeMusiques.length + ") musiques");
+
 	// renvoi des musique sous forme de LISTE d'objet Musique
+	return listeMusiques;
 },
 
 // Renvoi tout les genres différents
@@ -47,7 +64,7 @@ persistance_file.AjouterMusique = function(nlleMusique)
 },
 
 // Validation de la musique
-persistance_file.ValiderMusique = function(nlleMusique)
+persistance_file.ValiderMusique = function(idMusique)
 {
 	// recherche de la ligne dans le fichier
 

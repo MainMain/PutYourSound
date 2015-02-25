@@ -30,6 +30,9 @@ var pathToMusic = path.normalize(__dirname+"/musique/pending/");
 // lien avec les managers =================================================================
 // référencement musique manager
 var musique_manager = require("./managers/musique_manager.js");
+// intialisation du manager (chargement en mémoire des musiques)
+//musique_manager.Load();
+
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
 // référencement stream manager

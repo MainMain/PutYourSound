@@ -17,9 +17,16 @@ var musique_manager = {
 // Initialisation (chargement des données)
 Load : function()
 {	
-	// chaergemente n mémoire de la liste des musiques
-	//this.listeMusiques = persistance.GetMusiques();
+	// init array
+	this.listeMusiques = new Array();
 
+	// chargement en mémoire de la liste des musiques
+	this.listeMusiques = persistance.GetMusiques();
+
+	// le bon log
+	console.log("[MUSIQUE_MANAGER] : Chargement de (" + this.listeMusiques.length + ") musiques");
+	
+	// a commenter
 	if(!this.pathToMusic)
 		return null;
 	this.listeMusiques = fs.readdirSync(this.pathToMusic);
@@ -30,6 +37,7 @@ Load : function()
 // Ajout d'une musique par un utilisateur
 Ajouter : function(nom, artiste, genre, passProtection)
 {
+	console.log("Ajouter");
 	// Request id 
 	var id = this.GenerateId();
 
@@ -41,6 +49,9 @@ Ajouter : function(nom, artiste, genre, passProtection)
 
 	// ajout dans la liste de musique (attribut)
 	var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
+
+	// le bon log
+	console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
 
 	// référencement dans la persistance
 	persistance.AjouterMusique(nlleMusique);
@@ -66,18 +77,29 @@ Valider : function(idMusique)
 },
 
 // Suppression de la musique (! ne doit pas être en cours de lecture)
-Supprimer : function()
+Supprimer : function(idMusiqueASuppr)
 {
 	// !vérifier que le mot de passe de suppression est bon
+	// fonctionnalité annulée
 
 	// suppression de la liste de musique (attribut)
+	for (var i = 0; i < this.listeMusiques.length; i++)
+	{
+		if (this.listeMusiques[i].getId() === idMusiqueASuppr)
+		{
+			break;
+		}
+	}
+	this.listeMusiques.splice(i, 1);
+	console.log("[MUSIQUE_MANAGER] : Suppression de la musique " + idMusiqueASuppr);
 
 	// déréférencement dans la persistance
+	persistance.SupprimerMusique(idMusiqueASuppr);
 },
 
 Lire : function()
 {
-	console.log(vote_manager.GetVoteDominant());
+	console.log("[MUSIQUE_MANAGER] : Vote dominant : " + vote_manager.GetVoteDominant());
 },
 
 IsPassValidationOk : function(passEntree)
