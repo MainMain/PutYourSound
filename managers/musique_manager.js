@@ -77,7 +77,6 @@ Supprimer : function()
 
 Lire : function()
 {
-	
 	console.log(vote_manager.GetVoteDominant());
 },
 
