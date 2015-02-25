@@ -34,6 +34,7 @@ var musique_manager = require("./managers/musique_manager.js");
 musique_manager.Initialiser(pathToMusic);
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
+vote_manager.Initialiser();
 // référencement stream manager
 var stream_manager = require("./managers/stream_manager.js");
 // File upload via socket.io

@@ -23,7 +23,6 @@ var stream_manager = {
   },
 
   streamSong : function(){
-
     var track = this.pathToMusic + musique_manager.GetMusiqueAleatoire().getNomFicher();
    
    //var track = this.pathToMusic + musique_manager.GetMusiqueAleatoire();

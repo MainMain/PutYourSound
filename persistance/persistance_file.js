@@ -38,7 +38,6 @@ GetMusiques : function(pathToMusic)
 	//ajout à la liste qu'on va renvoyer
 	listeMusiques.push(music1);
 
-	
 
 	// vérifier que la musique lue dans le fichier existe bien ! 
 	/*
@@ -58,9 +57,19 @@ GetMusiques : function(pathToMusic)
 // Renvoi tout les genres différents
 GetGenres : function()
 {
+	var listeGenre = new Array();
+	
+	// pour tests
+	listeGenre.push("rock");
+	listeGenre.push("classique");
+	listeGenre.push("trance");
+	listeGenre.push("métal");
+	listeGenre.push("alternatif");
+	listeGenre.push("neo");
 	// lecture du fichier des genres
 
 	// renvoi des musique sous forme de LISTE de sting
+	return listeGenre;
 },
 
 // Enregistrement la musiques qui vient d'être validée
