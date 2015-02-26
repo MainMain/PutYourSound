@@ -13,7 +13,8 @@ var stream_manager = {
 
   decoder : undefined ,
 
-  init : function(){
+  Initialiser : function(racine){
+    pathToMusic = racine + "musique/"
     this.encoder = lame.Encoder({channels: 2, bitDepth: 16, sampleRate: 44100});
     this.decoder = lame.Decoder();
     var that = this;
@@ -22,7 +23,7 @@ var stream_manager = {
     });
   },
 
-  streamSong : function(){
+  StreamSong : function(){
     var track = this.pathToMusic + musique_manager.GetMusiqueAleatoire().getNomFicher();
    
     console.log("Choosed : "+ track);

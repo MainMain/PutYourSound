@@ -6,12 +6,12 @@ var Musique = (function() {
 	Musique.build = function() {return new Musique();};
 
 	// Constructeur
-	function Musique(id, nom, artiste, genre, passProtection, validee) {
+	function Musique(id, titre, artiste, genre, fichier, validee) {
 		this.id = id;
-		this.nom = nom;
+		this.titre = titre;
 		this.artiste = artiste;
 		this.genre = genre;
-		this.passProtection = undefined;
+		this.fichier = fichier;
 		this.validee = validee;
 	}
 
@@ -21,8 +21,8 @@ var Musique = (function() {
 			return this.id;
 		},
 
-		getNom : function(){
-			return this.nom;
+		getTitre : function(){
+			return this.titre;
 		},
 
 		getArtiste : function(){
@@ -33,31 +33,23 @@ var Musique = (function() {
 			return this.genre;
 		},
 
-		getPassValidation : function(){
-			return this.passProtection;
-		},
-
 		isValidee : function(){
 			return this.validee;
 		},
 
-		getNomFicher : function()
+		getFicher : function()
 		{
-			// Format du nom fichier 001-Titre-Artiste
-			return this.id+"-"+this.nom+"-"+this.artiste+".mp3";
-		},
-		
-		doValider : function() {
-			this.validee = true;
+			// Format du titre fichier 001-Titre-Artiste
+			return this.fichier;
 		}
 	};
 
 	// Attributs
 	Musique.id;
-	Musique.nom;
+	Musique.titre;
 	Musique.artiste;
 	Musique.genre;
-	Musique.passProtection;
+	Musique.fichier;
 	Musique.validee;
 
 

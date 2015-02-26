@@ -1,6 +1,6 @@
 // référencement autres couches
 var Musique = require("../model/musique.js")
-var persistance = require("../persistance/persistance_file.js")
+var persistance = require("./persistance_manager.js")
 var vote_manager = require("./vote_manager.js");
 var fs = require("fs");
 
@@ -15,19 +15,16 @@ var musique_manager = {
 
 
 // Initialisation (chargement des données)
-Initialiser : function(pathToMusic)
+Initialiser : function(racine)
 {	
-	// init persistance
-	persistance.Initialiser(pathToMusic);
-
 	// init array
 	this.listeMusiques = new Array();
 
 	// affectation chemin
-	this.pathToMusic = pathToMusic;
+	this.pathToMusic = racine + "musique/";
 
 	// chargement en mémoire de la liste des musiques
-	this.listeMusiques = persistance.GetMusiques();
+	//this.listeMusiques = persistance.GetMusiques();
 
 	// le bon log
 	console.log("[MUSIQUE_MANAGER] : Chargement de (" + this.listeMusiques.length + ") musiques");

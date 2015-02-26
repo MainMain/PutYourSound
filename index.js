@@ -1,19 +1,3 @@
-// données de test ================================================================
-var demo = { 
-  "projet": "PutYourSound",
-  "team": [{
-    "member": "Johan"
-  }, {
-    "member": "Joris"
-  }, {
-    "member": "Julien"
-  }, {
-    "member": "Roy"
-  }]
-};
-
-
-
 // requires ================================================================
 // import du framework express
 var express = require("express");
@@ -25,19 +9,29 @@ var siofu = require("socketio-file-upload");
 var ip = require("ip");
 var path = require("path");
 
-var pathToMusic = path.normalize(__dirname+"/musique/");
+var racine = __dirname +"/";
 
 // lien avec les managers =================================================================
+
 // référencement musique manager
 var musique_manager = require("./managers/musique_manager.js");
 // intialisation du manager (chargement en mémoire des musiques)
-musique_manager.Initialiser(pathToMusic);
+musique_manager.Initialiser(racine);
 
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
 vote_manager.Initialiser();
+
 // référencement stream manager
 var stream_manager = require("./managers/stream_manager.js");
+stream_manager.Initialiser(racine);
+
+var persistance_manager = require("./managers/persistance_manager.js");
+persistance_manager.Initialiser(racine);
+
+persistance_manager.GetMusiquesValidee(function(data){
+  console.log("MUSIQUE : %j" , data);
+});
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -58,12 +52,9 @@ app.use(express.static(__dirname + '/public'));
 // upload de fichier via socket.io
 app.use(siofu.router);
 
-//Initialisation du path pour récupérer les musiques
-musique_manager.pathToMusic = pathToMusic;
 
-stream_manager.pathToMusic = pathToMusic;
-stream_manager.init();
-stream_manager.streamSong();
+//On lance le stream
+//stream_manager.streamSong();
 
 // routes =================================================================
 // route principale (racine)
