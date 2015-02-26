@@ -1,5 +1,7 @@
 var Musique = require("../model/musique.js")
 var fs = require("fs");
+var lineByLineReader = require('line-by-line');
+
 // Constructeur
 function persistance_file(){}
 
@@ -7,6 +9,7 @@ function persistance_file(){}
 var persistance_file = {
 	pathToMusicFile : undefined,
 	pathToMusic : undefined,
+	listeMusiques : undefined,
 	
 
 // Init
@@ -24,15 +27,28 @@ Initialiser : function(pathToMusic)
 GetMusiques : function()
 {	
 	// lecture du fichier des musiques
-	// **création d'une liste de musique pour test**
-	var listeMusiques = new Array();
-	var music1 = new Musique("idAAAA", "a_part_of_you", "mainmain", "trance", "", false);
-	
+	this.listeMusiques = new Array();
 
-	//ajout à la liste qu'on va renvoyer
-	listeMusiques.push(music1);
-	console.log(music1);
+	var bufferString, bufferStringSplit;
+	var that = this;
 
+	function readFile() {
+		bufferString = fs.readFileSync(that.pathToMusicFile).toString();
+		bufferStringSplit = bufferString.split('\r');
+		parseLine();
+	}
+
+	function parseLine(){
+		for(var lineId in bufferStringSplit){
+			line = bufferStringSplit[lineId].split('-');
+			var music = new Musique(line[0], line[1], line[2], line[3], undefined, line[4]);
+			that.listeMusiques.push(music);
+		}
+	}
+
+	readFile();
+	return this.listeMusiques;
+	//return readFile(parseLine(returnListMusique))
 	// vérifier que la musique lue dans le fichier existe bien ! 
 	/*
 	if(!this.pathToMusic)
@@ -41,11 +57,6 @@ GetMusiques : function()
 	this.listeMusiques.splice(this.listeMusiques.indexOf(".keep"),1);
 	return this.listeMusiques;*/
 
-	// le bon log
-	console.log("[PERSISTANCE] : Chargement de (" + listeMusiques.length + ") musiques");
-
-	// renvoi des musique sous forme de LISTE d'objet Musique
-	return listeMusiques;
 },
 
 // Renvoi tout les genres différents
@@ -105,7 +116,7 @@ ValiderMusique : function(idMusique)
 			//on recupere les infos de la musique pour les mettre dans un objet musique
 			listeInfos = ligne.split("-");
 			console.log("[persistance_file] : -------> "+listeInfos);
-			music = new Musique(listeInfos[0],listeInfos[1],listeInfos[2],listeInfos[3],"",listeInfos[4]);
+			music = new Musique(listeInfos[0],listeInfos[1],listeInfos[2],listeInfos[3],"",true);
 			console.log("[persistance_file] : La nouvelle musique : "+music.getNom());
 			//TODO supprimer la ligne
 			contenuFinal = contenu.substring(0,contenu.indexOf(idMusique,0))+contenu.substring(contenu.indexOf("false",contenu.indexOf(idMusique,0))+5);

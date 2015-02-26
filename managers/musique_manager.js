@@ -44,40 +44,24 @@ Ajouter : function(fileName, nom, artiste, genre, passProtection)
 
 	var artisteClean = artiste.replace(/ /g, '_').replace('-','_');
 
-	console.log("current :" +this.pathToMusic + fileName + '.mp3' );
-	var fileNameFinal = id + '-' + nomClean + '-' + artisteClean + '-' + genre + '.mp3'
-	console.log("new :" +this.pathToMusic + fileNameFinal);
+
+	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
+
+	var fileNameFinal = id + '-' + nomClean + '-' + artisteClean + '.mp3'
 
 	var that = this;
 	fs.renameSync(this.pathToMusic + fileName + '.mp3', this.pathToMusic + fileNameFinal, function(err){
-		if (err) throw err;
-		var nlleMusique = new Musique(id, nomClean, artisteClean, genre, passProtection, false);
-
-		that.listeMusiques.push(nlleMusique);
-	
-		// le bon log
-		console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
-	
-		// référencement dans la persistance
-		persistance.AjouterMusique(nlleMusique);
+		if (err) console.log("Erreur Ajout :" + err) ;
 	});
 
-	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
-	// fait dans index.js
-
-	// ajout du fichier dans le dossier
-	// fait dans index.je
-
-	// ajout dans la liste de musique (attribut)
 	//var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
-//
-	//this.listeMusiques.push(nlleMusique);
-//
-	//// le bon log
-	//console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
-//
-	//// référencement dans la persistance
-	//persistance.AjouterMusique(nlleMusique);
+	var nlleMusique = new Musique(id, nomClean, artisteClean, genre, passProtection, false);
+	that.listeMusiques.push(nlleMusique);
+
+	console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
+
+	// référencement dans la persistance
+	persistance.AjouterMusique(nlleMusique);
 },
 
 // Validation d'une musique par un modérateur
