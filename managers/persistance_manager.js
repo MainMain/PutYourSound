@@ -17,7 +17,8 @@ var persistance_manager = {
 			console.log("DB déjà présente");
 		}
 	},
-//id, titre, artiste, genre, fichier, validee)
+
+	//id, titre, artiste, genre, fichier, validee)
 	GetMusiquesValidee : function(callback){
 		var musiqueValide = [];
 		db.serialize(function(){
@@ -31,10 +32,17 @@ var persistance_manager = {
 		});
 	},
 
-	GetMusiquesAttente : function(){
+	GetMusiquesAttente : function(callback){
+		var musiqueAttente = [];
 		db.serialize(function(){
 			var query = "SELECT m.id, m.titre, m.artiste, m.validee, m.fichier, g.genre FROM musique m INNER JOIN genre g On g.id = m.genre_id WHERE m.validee = 0";
-			db.each(query)
+			db.each(query, function(err, row){
+				musiqueAttente.push(new Musique(row.id, row.titre, row.artiste, row.genre, row.fichier, row.validee));
+			},
+			function(){
+				console.log("[PERSITANCE] %j", musiqueAttente);
+				callback(musiqueAttente);
+			});
 		});
 	},
 
@@ -46,8 +54,25 @@ var persistance_manager = {
 		// body...
 	},
 
+	GetMusiqueForId : function(musiqueId, callback){
+		db.serialize(function(){
+			var query = "SELECT m.id, m.titre, m.artiste, m.validee, m.fichier, g.genre FROM musique m INNER JOIN genre g on g.id = m.genre_id WHERE m.id = ?";
+			db.all(query,[ musiqueId ], function(err, row){
+				console.log("[PERSITANCE] Musique for id : " + musiqueId +" Result %j",row[0]);
+				callback(row[0]);
+			});
+		});
+	},
+
 	GetRandomMusiqueForGenre : function(genreId){
 
+	},
+
+	Valider : function(musiqueId){
+		db.serialize(function(){
+			var query = "UPDATE musique SET validee = 1 WHERE id = ?";
+			db.run(query,[ musiqueId ]);
+		});
 	}
 };
 

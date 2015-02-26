@@ -2,7 +2,7 @@
 	<div class="form-group">
 		<select class="form-control" id="songs" >
 			{{#songs}}
-			<option value="{{id}}">{{name}}</option>
+			<option value="{{id}}">{{titre}}</option>
 			{{/songs}}
 		</select>	
 	</div>

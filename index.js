@@ -19,19 +19,16 @@ var musique_manager = require("./managers/musique_manager.js");
 musique_manager.Initialiser(racine);
 
 // référencement vote manager
+/*
 var vote_manager = require("./managers/vote_manager.js");
 vote_manager.Initialiser();
-
 // référencement stream manager
 var stream_manager = require("./managers/stream_manager.js");
 stream_manager.Initialiser(racine);
-
+*/
 var persistance_manager = require("./managers/persistance_manager.js");
 persistance_manager.Initialiser(racine);
 
-persistance_manager.GetMusiquesValidee(function(data){
-  console.log("MUSIQUE : %j" , data);
-});
 // File upload via socket.io
 
 // configuration express et socket.io ===============================================================
@@ -67,6 +64,7 @@ app.get('/', function(req, res) {
   });
 });
 
+/*
 //Route du streaming 
 app.get('/stream.mp3', function(req, res) {
 
@@ -79,6 +77,7 @@ app.get('/stream.mp3', function(req, res) {
   });
 
 });
+*/
 // lancement du serveur
 // app
 server.listen(process.env.PORT || 3000);
@@ -89,7 +88,7 @@ console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 io.on('connection', function (socket) {
   var uploader = new siofu;
-  uploader.dir = pathToMusic;
+  uploader.dir = racine + "musique/";
   uploader.listen(socket);
   uploader.on("saved", function(event){
     console.log("%j",event.file.base)
@@ -99,17 +98,21 @@ io.on('connection', function (socket) {
   //pour charger le formulaire de moderation si mdp valide
   socket.on('passMode', function(mdp){
     if(musique_manager.IsPassValidationOk(mdp)){
-      file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
+      file = path.normalize(racine + "views/moderationFormEcouter.mst");
       fs.readFile(file, "utf8", function(error, filedata){
         if(error) throw error;
-        var musics = musique_manager.GetNomMusiquesPending();
-        socket.emit("passModeResult", {template : filedata.toString(), json : {songs : musics}});
+        console.log("[INDEX] GetMusiquesAttente");
+        var musics;
+        musique_manager.GetMusiquesAttente(function(result){
+          console.log("Test %j", result);
+          socket.emit("passModeResult", {template : filedata.toString(), json : {songs : result}});
+        });
       });
     }
   });
   
   socket.on("listenSong", function(id){
-   file = path.normalize(__dirname + "/views/moderationFormValider.mst");
+   file = path.normalize(racine + "views/moderationFormValider.mst");
    fs.readFile(file, "utf8", function(error, filedata){
     if(error) throw error;
     socket.emit("listenSongResult", {template : filedata.toString(), json : {songId : id}});
@@ -117,27 +120,33 @@ io.on('connection', function (socket) {
  });
 
   socket.on("getSong", function(id){
-    var file = pathToMusic + musique_manager.GetNomFichierForId(id);
-    fs.readFile(file,"base64", function(error, filedata){
-      if(error) throw error;
-      socket.emit("getSongResult", filedata);
+    var file;
+    musique_manager.GetMusiqueForId(id, function(result){
+      file = path.normalize( racine + "musique/" + result.fichier);
+      fs.readFile(file,"base64", function(error, filedata){
+        if(error) throw error;
+        socket.emit("getSongResult", filedata);
+      });
     });
   });
 
   socket.on("moderationValider", function(data){
-
-    if(data.state){
+    console.log("[INDEX] moderation valider %j", data);
+    if(data.state === "true"){
       musique_manager.Valider(data.id);
     }else{
-      musique_manager.Supprimer(data.id);
+      console.log("SUPPRESSION MUSIQUE " + data.id);
+      //musique_manager.Supprimer(data.id);
     }
 
-    file = path.normalize(__dirname + "/views/moderationFormEcouter.mst");
+    file = path.normalize(racine + "views/moderationFormEcouter.mst");
     fs.readFile(file, "utf8", function(error, filedata){
       if(error) throw error;
-      var musics = musique_manager.GetNomMusiquesPending();
-      socket.emit("passModeResult", {template : filedata.toString(), json : {songs : musics}});
+      var musics;
+      musique_manager.GetMusiquesAttente(function(result){
+        console.log("Test %j", result);
+        socket.emit("passModeResult", {template : filedata.toString(), json : {songs : result}});
+      });
     });
-    console.log(data.id + data.state);
   });
 });

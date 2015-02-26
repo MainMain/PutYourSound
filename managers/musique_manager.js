@@ -64,20 +64,8 @@ Ajouter : function(fileName, nom, artiste, genre, passProtection)
 // Validation d'une musique par un modérateur
 Valider : function(idMusique)
 {
-	// note : on ne vérifie pas le mot de passe (déja vérifié pour accéder au panel)
-	// validation dans la liste de musique (attribut)
-	var curMusique;
-	for (var id in this.listeMusiques)
-	{
-		curMusique = this.listeMusiques[id];
-		if (curMusique.getId() === idMusique)
-		{
-			curMusique.doValider();
-		}
-	}
-	console.log("[MUSIQUE_MANAGER] : Validation de la musique " +  curMusique.nom + " - " + curMusique.artiste)
 	// référencement dans la persistance
-	persistance.ValiderMusique(idMusique);
+	persistance.Valider(idMusique);
 },
 
 // Suppression de la musique (! ne doit pas être en cours de lecture)
@@ -132,18 +120,6 @@ Test : function()
 	//console.log(musiqueTest.getNom());
 },
 
-GenerateId : function()
-{
-    var id = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var longueurId = 6;
-
-    for( var i=0; i < longueurId; i++ )
-        id += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return id;
-},
-
 // Renvoi les musiques validées
 GetMusiquesValidees : function()
 {
@@ -179,47 +155,13 @@ GetNomMusiquesValidees : function()
 },
 
 // Renvoi les musiques en attente de validation
-GetMusiquesPending : function()
+GetMusiquesAttente : function(callback)
 {
-	// lecture du fichier des musiques
-	var listeMusiquesPending = new Array();
-	for (var i = 0; i < this.listeMusiques.length; i++)
-	{
-		if (!this.listeMusiques[i].isValidee())
-		{
-			listeMusiquesPending.push(this.listeMusiques[i]);
-		}
-	}
-
-	// renvoi des musique sous forme de LISTE d'objet Musique
-	return listeMusiquesPending;
+	persistance.GetMusiquesAttente(function(result){callback(result)});
 },
 
-// Renvoi les titres musiques en attente de validation
-GetNomMusiquesPending : function()
-{
-	// lecture du fichier des musiques
-	var listeMusiquesPending = new Array();
-	for (var i = 0; i < this.listeMusiques.length; i++)
-	{
-		if (!this.listeMusiques[i].isValidee())
-		{
-			listeMusiquesPending.push({ id : this.listeMusiques[i].id, name : this.listeMusiques[i].nom});
-		}
-	}
-	console.log(listeMusiquesPending.length);
-	// renvoi des musique sous forme de LISTE d'objet Musique
-	return listeMusiquesPending;
-},
-
-GetNomFichierForId : function(id){
-	for (var i = 0; i < this.listeMusiques.length; i++)
-	{
-		if (this.listeMusiques[i].id === id)
-		{
-			return this.listeMusiques[i].getNomFicher();
-		}
-	}
+GetMusiqueForId : function(musiqueId, callback){
+	persistance.GetMusiqueForId(musiqueId, function(result){callback(result)});
 }
 
 };

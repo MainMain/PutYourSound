@@ -1,5 +1,5 @@
 // référencement autres couches
-var persistance = require("../persistance/persistance_file.js")
+var persistance = require("./persistance_manager.js")
 
 // Constructeur
 var vote_Manager = {
