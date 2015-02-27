@@ -1,0 +1,4 @@
+<div>	
+	<h2>Votez pour votre style</h2>
+	<label>Vous avez choisi le genre {{genreChoisi}}, veuillez attendre la chanson suivante pour revoter.</label>
+</div>

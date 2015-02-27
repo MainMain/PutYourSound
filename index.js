@@ -21,10 +21,10 @@ var musique_manager = require("./managers/musique_manager.js");
 // référencement vote manager
 var vote_manager = require("./managers/vote_manager.js");
 
-/*
+
 // référencement stream manager
 var stream_manager = require("./managers/stream_manager.js");
-*/
+
 var persistance_manager = require("./managers/persistance_manager.js");
 
 
@@ -53,7 +53,7 @@ var initComplet = 0;
 function TrackInit(){
   initComplet += 1;
   console.log("[TRACKINIT] " + initComplet);
-  if(initComplet === 3){
+  if(initComplet === 4){
     //Quand tout les managers sont pret on peut lancer la suite
     console.log("STARITNG APP");
     StartApp();
@@ -63,16 +63,22 @@ function TrackInit(){
 // On lance l'initalisation des managers
 function InitApp(){
   console.log("[INDEX] RACINE " + racine);
-  persistance_manager.Initialiser(racine, function(){TrackInit()});
-  musique_manager.Initialiser(racine, function(){TrackInit()});
-  vote_manager.Initialiser(function(){TrackInit()});
-  //stream_manager.Initialiser(racine, function(){TrackInit()});
+  persistance_manager.Initialiser(racine, function(){
+    TrackInit();
+    vote_manager.Initialiser(function(){
+      TrackInit();
+      musique_manager.Initialiser(racine, function(){
+        TrackInit();
+        stream_manager.Initialiser(racine, function(){TrackInit()});
+      });
+    });
+  });
 };
 
 function StartApp(){
 
 //On lance le stream
-//stream_manager.streamSong();
+stream_manager.StreamSong();
 
 // routes =================================================================
 // route principale (racine)
@@ -81,17 +87,23 @@ app.get('/', function(req, res) {
   // envoi des données de la page
   var genresSelection = vote_manager.GetGenresSelection();
   var genres = vote_manager.GetGenres();
-  res.render('master', {
-    ip : ip.address(),
-    port : 3000,
-    genres : genres,
-    genre1 : { id : genresSelection[0].id, genre : genresSelection[0].genre},
-    genre2 : { id : genresSelection[1].id, genre : genresSelection[1].genre},
-    genre3 : { id : genresSelection[2].id, genre : genresSelection[2].genre}
+  vote_manager.GetVoteDominant(function(infos){
+
+    res.render('master', {
+      ip : ip.address(),
+      port : 3000,
+      genres : genres,
+      genre1 : { id : genresSelection[0].id, genre : genresSelection[0].genre},
+      genre2 : { id : genresSelection[1].id, genre : genresSelection[1].genre},
+      genre3 : { id : genresSelection[2].id, genre : genresSelection[2].genre},
+      pourcent1 : infos.pourcent1, 
+      pourcent2 : infos.pourcent2, 
+      pourcent3 : infos.pourcent3
+    });
   });
 });
 
-/*
+
 //Route du streaming 
 app.get('/stream.mp3', function(req, res) {
 
@@ -104,7 +116,6 @@ app.get('/stream.mp3', function(req, res) {
   });
 
 });
-*/
 // lancement du serveur
 // app
 server.listen(process.env.PORT || 3000);
@@ -114,9 +125,6 @@ console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 // communication client <-> serveur =================================================================
 
 io.sockets.on('connection', function (socket) {
-
-  var clientIp = socket.request.connection.remoteAddress
-  console.log("New connection from " + clientIp);
 
   var uploader = new siofu;
   uploader.dir = racine + "musique/";
@@ -167,13 +175,35 @@ io.sockets.on('connection', function (socket) {
     }else{
       musique_manager.Supprimer(data.id);
     }
-    file = path.normalize(racine + "views/moderationFormEcouter.mst");
+    var file = path.normalize(racine + "views/moderationFormEcouter.mst");
     fs.readFile(file, "utf8", function(error, filedata){
       if(error) throw error;
       var musics;
       musique_manager.GetMusiquesAttente(function(result){
         socket.emit("passModeResult", {template : filedata.toString(), json : {songs : result}});
       });
+    });
+  });
+
+  socket.on("voteGenre", function(data){
+    var clientIp = socket.request.connection.remoteAddress
+    vote_manager.AjouterVote(data, clientIp, function (result){
+      console.log("VOTE enregistré pour " + result.genre + " id "+result.id );
+      //Emit 1 retour vous avez votez pour
+      var file = path.normalize(racine + "views/voteVoted.mst");
+      fs.readFile(file, "utf8", function(error, filedata){
+        if(error) throw error;
+        socket.emit("voteVoted", {template : filedata.toString(), json : {genreChoisi : result.genre}});
+      });
+      //Emit 2 Broadcast progress
+      vote_manager.GetVoteDominant(function(infos){
+        var file2 = path.normalize(racine + "views/voteProgress.mst");
+        fs.readFile(file, "utf8", function(error, filedata){
+          if(error) throw error;
+          io.emit("voteProgress", {template : filedata.toString(), json : {pourcent1 : infos.pourcent1, pourcent2 : infos.pourcent2, pourcent3 : infos.pourcent3}});
+        });
+      });
+      
     });
   });
 });

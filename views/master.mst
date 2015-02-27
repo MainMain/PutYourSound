@@ -73,7 +73,12 @@
 			<div id="formulaireAjout" class="col-md-4">{{>upload}}</div>
 			<!-- Vote -->
 			<div class="col-md-4">
-				{{>voteForm}}
+				<div class="" id="voteReceiver">
+					{{>voteForm}}
+				</div>
+				<div class="" id="progressReceiver">
+					{{>voteProgress}}
+				</div>
 			</div>
 			<!-- Admin -->
 			<div id="moderation" class="col-md-4">
@@ -102,25 +107,24 @@
 	<script type="text/javascript">
 	$( document ).ready(function(){
 	var context = new AudioContext();
-		var socket = io.connect('http://{{ip}}:{{port}}');
-		var siofu = new SocketIOFileUpload(socket);
+	var socket = io.connect('http://{{ip}}:{{port}}');
+	var siofu = new SocketIOFileUpload(socket);
+	updateProgress({pourcent1 : {{pourcent1}}, pourcent2 : {{pourcent2}}, pourcent3 : {{pourcent3}} })
+	$("#formUpload").submit(function(e){e.preventDefault()});
+	
+	siofu.listenOnSubmit(document.getElementById("submitUpload"), document.getElementById("file"));
+	siofu.addEventListener("start", function(event){
+		$("#spinner").show();
+		$("#formUpload").hide();
+		event.file.meta.artiste = $("#artist").val();
+		event.file.meta.song = $("#songName").val();
+		event.file.meta.genre = $("#genre").val();
+	});
 
-		$("#formUpload").submit(function(e){e.preventDefault()});
-		
-		siofu.listenOnSubmit(document.getElementById("submitUpload"), document.getElementById("file"));
-
-		siofu.addEventListener("start", function(event){
-			$("#spinner").show();
-			$("#formUpload").hide();
-			event.file.meta.artiste = $("#artist").val();
-			event.file.meta.song = $("#songName").val();
-			event.file.meta.genre = $("#genre").val();
-		});
-
-		siofu.addEventListener("complete", function(event){
-			$("#spinner").hide();
-			$("#formUpload").show();
-		});
+	siofu.addEventListener("complete", function(event){
+		$("#spinner").hide();
+		$("#formUpload").show();
+	});
 
 	$("#formPass").submit(function(e){
 		e.preventDefault();
@@ -129,6 +133,9 @@
 			socket.emit("passMode", pass);
 	});
 
+	$("button[id^='genre'").click(function(){
+		socket.emit("voteGenre", $(this).val());
+	});
 	//Resultat de l'envoi du mdp d'authentification
 	//Chargement du template pour choisir la chanson a ecouter
 	socket.on("passModeResult", function(data){
@@ -147,6 +154,22 @@
 		updateModerationValider();
 	});
 
+	//APRES un vote vous avez choisit ..
+	socket.on("voteVoted", function(data){
+		var moderation = $('#voteReceiver');
+		var rendered = Mustache.render(data.template, data.json);
+		moderation.html(rendered);
+	});
+
+	//Apres un vote maj des bars
+	socket.on("voteProgress", function(data){
+		var moderation = $('#voteProgress');
+		var rendered = Mustache.render(data.template, data.json);
+		moderation.html(rendered);
+		console.log("%j",data);
+		updateProgress(data.json);
+	});
+
 	//Charge l'audio dans le player
 	socket.on("getSongResult", function(data){
 		var player = $('#moderationPlayer');
@@ -154,6 +177,7 @@
 		player.attr('controls',"");
 		player.attr('src',"data:audio/mpeg;base64," + data);
 	});
+
 
 	//Pour mettre a jour les connections entre les balises et le js
 	function updateModerationEcouter(){
@@ -177,8 +201,14 @@
 		$("#modeRefuser").click(function(e){
 			socket.emit("moderationValider", {id : songId, state : $(this).val()});
 		});
-
 	};
+
+	function updateProgress(data){
+
+		$("#pourcent1").css("width", data.pourcent1 + '%');
+		$("#pourcent2").css("width", data.pourcent2 + '%');
+		$("#pourcent3").css("width", data.pourcent3 + '%');
+	}; 
 
 });
 	

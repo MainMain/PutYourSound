@@ -66,9 +66,12 @@ Supprimer : function(idMusique)
 
 Lire : function(callback)
 {
-	genreDominant = vote_manager.GetVoteDominant();
-	persistance_manager.GetRandomMusiqueForGenre(genreDominant, function(result){
-		callback(result.fichier);
+	vote_manager.Initialiser(function(){
+		vote_manager.GetVoteDominant(function(infos){
+			persistance.GetRandomMusiqueForGenre(infos.genreDominant, function(result){
+				callback(result.fichier);
+			});
+		});
 	});
 },
 

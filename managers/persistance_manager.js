@@ -82,7 +82,7 @@ var persistance_manager = {
 		db.serialize(function(){
 			var query = "SELECT m.id, m.titre, m.artiste, m.validee, m.fichier, g.genre FROM musique m INNER JOIN genre g on g.id = m.genre_id WHERE g.id = ? AND m.validee = 1 ORDER BY RANDOM() LIMIT 1";
 			db.all(query,[ genreId ], function(err, row){
-				console.log("[PERSITANCE] MUSIQUE ALEATOIRE Result %j",row[0]);
+				console.log("[PERSITANCE] MUSIQUE ALEATOIRE Result %j",row);
 				callback(row[0]);
 			});
 		});

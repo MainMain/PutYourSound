@@ -1,4 +1,4 @@
-<div class="row">
+<div>
 	<h2>Votez pour votre style</h2>
 	<label>Choisissez le style de musique à passer ensuite sur notre webradio.</label>
 
@@ -10,23 +10,5 @@
 	</div>
 	<div class="col-md-4" style="padding: 0;">
 		<button type="text" class="btn btn-lg btn-block btn-danger" id="genre3" value="{{genre3.id}}">{{genre3.genre}}</button>
-	</div>
-</div>
-<div class="row">
-	<h2>Cours des votes</h2>
-	<div class="progress">
-		<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
-			<span class="sr-only">40% Complete (success)</span>
-		</div>
-	</div>
-	<div class="progress">
-		<div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
-			<span class="sr-only">60% Complete (warning)</span>
-		</div>
-	</div>
-	<div class="progress">
-		<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
-			<span class="sr-only">80% Complete (danger)</span>
-		</div>
 	</div>
 </div>
