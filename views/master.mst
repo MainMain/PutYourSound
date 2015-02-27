@@ -73,8 +73,7 @@
 			<div id="formulaireAjout" class="col-md-4">{{>upload}}</div>
 			<!-- Vote -->
 			<div class="col-md-4">
-				<h2>Votez pour votre style</h2>
-				<p>Choisissez le style de musique à passer ensuite sur notre webradio.</p>
+				{{>voteForm}}
 			</div>
 			<!-- Admin -->
 			<div id="moderation" class="col-md-4">
@@ -161,7 +160,9 @@
 		$("#formEcouter").submit(function(e){
 			e.preventDefault();
 			var selected =  $("#songs option:selected").val();
-			socket.emit('listenSong', selected);
+			console.debug(selected);
+			if(selected != 0)
+				socket.emit('listenSong', selected);
 		});
 	}
 

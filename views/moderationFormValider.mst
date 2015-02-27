@@ -10,7 +10,7 @@
 </div>
 <form id="formValider">
 	<input type="hidden" id="songId" value="{{songId}}">
-	<div class="">
+	<div>
 		<div class="col-md-6" style="padding: 0;">
 			<button type="text" class="btn btn-lg btn-block btn-success" id="modeValider" value="true"><span class="glyphicon glyphicon-thumbs-up"></span></button>
 		</div>

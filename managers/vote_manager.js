@@ -3,53 +3,40 @@ var persistance = require("./persistance_manager.js")
 
 // Constructeur
 var vote_Manager = {
-	genre_1 : { nom : undefined, votes : 0 },
-	genre_2 : { nom : undefined, votes : 0 },
-	genre_3 : { nom : undefined, votes : 0 },
 	listeGenres : undefined,
+	listeVotes : {
+		genre_1 : 0,
+		genre_2 : 0,
+		genre_3 : 0,
+	},
 	listeVotants : undefined,
 
-Initialiser : function()
+Initialiser : function(callback)
 {
 	// demande la liste des genres à la persistance
-	this.listeGenres = persistance.GetGenres();
-
-	// choix de trois genres aléatoires
-	var num1 = Math.floor(Math.random() *  this.listeGenres.length);
-
-	var num2;
-	do
-	{
-		num2  = Math.floor(Math.random() *  this.listeGenres.length);
-	}while(num2 === num1)
-
-	var num3;
-	do
-	{
-		num3 = Math.floor(Math.random() *  this.listeGenres.length);
-	}while(num3 === num1 || num3 === num2)
-
-	// affecte les noms
-	this.genre_1.nom = this.listeGenres[num1];
-	this.genre_2.nom = this.listeGenres[num2];
-	this.genre_3.nom = this.listeGenres[num3];
+	var that = this;
+	persistance.GetNRandomGenres(3, function(result){
+		that.listeGenres = result;
+		console.log("[VOTE] Genres : %j", that.listeGenres);
+	});
 
 	// init le nombre de vote
-	this.genre_1.votes = 0;
-	this.genre_2.votes = 0;
-	this.genre_3.votes = 0;
-
-	// le bon log
-	console.log("[VOTE_MANAGER] : Nouveaux genre à voter : " + this.genre_1.nom + " - " 
-		+ this.genre_2.nom + " - " + this.genre_3.nom);
+	this.listeVotes.genre_1 = 0;
+	this.listeVotes.genre_2 = 0;
+	this.listeVotes.genre_3 = 0;
 
 
 	// vidage de la liste des votants
 	this.listeVotants = new Array();
+	callback();
+},
+
+GetGenresSelection : function(){
+	return this.listeGenres;
 },
 
 // Un utilisateur vient de voter
-AjouterVote : function(nomDuGenre)
+AjouterVote : function(nomDuGenre, ipVotant)
 {
 	// on vérifie qu'il n'a pas voté
 	// TODO ?

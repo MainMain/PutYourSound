@@ -15,7 +15,7 @@ var musique_manager = {
 
 
 // Initialisation (chargement des données)
-Initialiser : function(racine)
+Initialiser : function(racine, callback)
 {	
 	// init array
 	this.listeMusiques = new Array();
@@ -28,6 +28,7 @@ Initialiser : function(racine)
 
 	// le bon log
 	console.log("[MUSIQUE_MANAGER] : Chargement de (" + this.listeMusiques.length + ") musiques");
+	callback();
 },
 
 // Ajout d'une musique par un utilisateur
@@ -69,24 +70,12 @@ Valider : function(idMusique)
 },
 
 // Suppression de la musique (! ne doit pas être en cours de lecture)
-Supprimer : function(idMusiqueASuppr)
+Supprimer : function(idMusique)
 {
-	// !vérifier que le mot de passe de suppression est bon
-	// fonctionnalité annulée
-
-	// suppression de la liste de musique (attribut)
-	for (var i = 0; i < this.listeMusiques.length; i++)
-	{
-		if (this.listeMusiques[i].getId() === idMusiqueASuppr)
-		{
-			break;
-		}
-	}
-	this.listeMusiques.splice(i, 1);
-	console.log("[MUSIQUE_MANAGER] : Suppression de la musique " + idMusiqueASuppr);
+	console.log("[MUSIQUE_MANAGER] : Suppression de la musique " + idMusique);
 
 	// déréférencement dans la persistance
-	persistance.SupprimerMusique(idMusiqueASuppr);
+	persistance.Supprimer(idMusique);
 },
 
 Lire : function()

@@ -6,7 +6,7 @@ var fs = require("fs");
 
 var persistance_manager = {
 	listesGenres : undefined,
-	Initialiser : function(racine){
+	Initialiser : function(racine, callback){
 		if(!fs.existsSync(racine + "musiques.db")){
 			console.log("Creation BD");
 			db.serialize(function() {
@@ -15,6 +15,7 @@ var persistance_manager = {
 			});	
 		}else{
 			console.log("DB déjà présente");
+			callback();
 		}
 	},
 
@@ -46,12 +47,14 @@ var persistance_manager = {
 		});
 	},
 
-	GetGenres : function(){
-
-	},
-
-	GetNRandomGenres : function (N) {
-		// body...
+	GetNRandomGenres : function (N, callback) {
+		db.serialize(function(){
+			var query = "SELECT * FROM genre ORDER BY RANDOM() LIMIT ?";
+			db.all(query,[ N ], function(err, row){
+				console.log("[PERSITANCE] GENRE ALEATOIRE  " + N +" Result %j",row);
+				callback(row);
+			});
+		});
 	},
 
 	GetMusiqueForId : function(musiqueId, callback){
@@ -72,6 +75,13 @@ var persistance_manager = {
 		db.serialize(function(){
 			var query = "UPDATE musique SET validee = 1 WHERE id = ?";
 			db.run(query,[ musiqueId ]);
+		});
+	},
+
+	Supprimer : function(musiqueId){
+		db.serialize(function(){
+			var query = "DELETE FROM musique WHERE id = ?";
+			db.run(query, [ musiqueId ]);
 		});
 	}
 };

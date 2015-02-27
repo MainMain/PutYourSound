@@ -16,18 +16,19 @@ var racine = __dirname +"/";
 // référencement musique manager
 var musique_manager = require("./managers/musique_manager.js");
 // intialisation du manager (chargement en mémoire des musiques)
-musique_manager.Initialiser(racine);
+
 
 // référencement vote manager
-/*
 var vote_manager = require("./managers/vote_manager.js");
-vote_manager.Initialiser();
+
+/*
 // référencement stream manager
 var stream_manager = require("./managers/stream_manager.js");
 stream_manager.Initialiser(racine);
 */
 var persistance_manager = require("./managers/persistance_manager.js");
-persistance_manager.Initialiser(racine);
+
+
 
 // File upload via socket.io
 
@@ -49,6 +50,26 @@ app.use(express.static(__dirname + '/public'));
 // upload de fichier via socket.io
 app.use(siofu.router);
 
+var initComplet = 0;
+
+
+
+function TrackInit(){
+  initComplet += 1;
+  console.log("[TRACKINIT] " + initComplet);
+  if(initComplet === 3){
+    console.log("STARITNG APP");
+    StartApp();
+  }
+}
+
+function InitApp(){
+  persistance_manager.Initialiser(racine, function(){TrackInit()});
+  musique_manager.Initialiser(racine, function(){TrackInit()});
+  vote_manager.Initialiser(function(){TrackInit()});
+};
+
+function StartApp(){
 
 //On lance le stream
 //stream_manager.streamSong();
@@ -58,9 +79,13 @@ app.use(siofu.router);
 app.get('/', function(req, res) {
   console.log("Requested root");
   // envoi des données de la page
+  var genres = vote_manager.GetGenresSelection();
   res.render('master', {
     ip : ip.address(),
-    port : 3000
+    port : 3000,
+    genre1 : { id : genres[0].id, genre : genres[0].genre},
+    genre2 : { id : genres[1].id, genre : genres[1].genre},
+    genre3 : { id : genres[2].id, genre : genres[2].genre}
   });
 });
 
@@ -131,22 +156,21 @@ io.on('connection', function (socket) {
   });
 
   socket.on("moderationValider", function(data){
-    console.log("[INDEX] moderation valider %j", data);
     if(data.state === "true"){
       musique_manager.Valider(data.id);
     }else{
-      console.log("SUPPRESSION MUSIQUE " + data.id);
-      //musique_manager.Supprimer(data.id);
+      musique_manager.Supprimer(data.id);
     }
-
     file = path.normalize(racine + "views/moderationFormEcouter.mst");
     fs.readFile(file, "utf8", function(error, filedata){
       if(error) throw error;
       var musics;
       musique_manager.GetMusiquesAttente(function(result){
-        console.log("Test %j", result);
         socket.emit("passModeResult", {template : filedata.toString(), json : {songs : result}});
       });
     });
   });
 });
+}
+
+InitApp();

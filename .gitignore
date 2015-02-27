@@ -33,5 +33,4 @@ node_modules
 npm-debug.log
 
 #Musics Folder
-musique/pending/*
-musique/approved/*
+musique/*

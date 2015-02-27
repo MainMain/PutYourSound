@@ -4,6 +4,7 @@
 			{{#songs}}
 			<option value="{{id}}">{{titre}}</option>
 			{{/songs}}
+			{{^songs}} <option value="0">Il n'y a pas de morceau à valider</option>{{/songs}}
 		</select>	
 	</div>
 	<input type="submit" class="btn btn-block btn-primary" name="submitEcouter" id="submitEcouter" value="&Eacute;couter">
