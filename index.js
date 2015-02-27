@@ -9,7 +9,7 @@ var siofu = require("socketio-file-upload");
 var ip = require("ip");
 var path = require("path");
 
-var racine = __dirname +"/";
+var racine = path.normalize( __dirname +"/");
 
 // lien avec les managers =================================================================
 
@@ -24,13 +24,9 @@ var vote_manager = require("./managers/vote_manager.js");
 /*
 // référencement stream manager
 var stream_manager = require("./managers/stream_manager.js");
-stream_manager.Initialiser(racine);
 */
 var persistance_manager = require("./managers/persistance_manager.js");
 
-
-
-// File upload via socket.io
 
 // configuration express et socket.io ===============================================================
 // lancement d'express
@@ -58,15 +54,19 @@ function TrackInit(){
   initComplet += 1;
   console.log("[TRACKINIT] " + initComplet);
   if(initComplet === 3){
+    //Quand tout les managers sont pret on peut lancer la suite
     console.log("STARITNG APP");
     StartApp();
   }
 }
 
+// On lance l'initalisation des managers
 function InitApp(){
+  console.log("[INDEX] RACINE " + racine);
   persistance_manager.Initialiser(racine, function(){TrackInit()});
   musique_manager.Initialiser(racine, function(){TrackInit()});
   vote_manager.Initialiser(function(){TrackInit()});
+  //stream_manager.Initialiser(racine, function(){TrackInit()});
 };
 
 function StartApp(){
@@ -79,13 +79,15 @@ function StartApp(){
 app.get('/', function(req, res) {
   console.log("Requested root");
   // envoi des données de la page
-  var genres = vote_manager.GetGenresSelection();
+  var genresSelection = vote_manager.GetGenresSelection();
+  var genres = vote_manager.GetGenres();
   res.render('master', {
     ip : ip.address(),
     port : 3000,
-    genre1 : { id : genres[0].id, genre : genres[0].genre},
-    genre2 : { id : genres[1].id, genre : genres[1].genre},
-    genre3 : { id : genres[2].id, genre : genres[2].genre}
+    genres : genres,
+    genre1 : { id : genresSelection[0].id, genre : genresSelection[0].genre},
+    genre2 : { id : genresSelection[1].id, genre : genresSelection[1].genre},
+    genre3 : { id : genresSelection[2].id, genre : genresSelection[2].genre}
   });
 });
 
@@ -111,7 +113,11 @@ console.log("Serveur PutYourSound lancé sur " + ip.address() + ":3000");
 
 // communication client <-> serveur =================================================================
 
-io.on('connection', function (socket) {
+io.sockets.on('connection', function (socket) {
+
+  var clientIp = socket.request.connection.remoteAddress
+  console.log("New connection from " + clientIp);
+
   var uploader = new siofu;
   uploader.dir = racine + "musique/";
   uploader.listen(socket);

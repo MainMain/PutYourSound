@@ -2,7 +2,9 @@
 var Musique = require("../model/musique.js")
 var persistance = require("./persistance_manager.js")
 var vote_manager = require("./vote_manager.js");
-var fs = require("fs");
+var fs = require('fs-extra');
+var path = require("path");
+ 
 
 // Attributs
 // Liste des musiques
@@ -21,7 +23,7 @@ Initialiser : function(racine, callback)
 	this.listeMusiques = new Array();
 
 	// affectation chemin
-	this.pathToMusic = racine + "musique/";
+	this.pathToMusic = path.normalize(racine + "musique/");
 
 	// chargement en mémoire de la liste des musiques
 	//this.listeMusiques = persistance.GetMusiques();
@@ -32,34 +34,13 @@ Initialiser : function(racine, callback)
 },
 
 // Ajout d'une musique par un utilisateur
-Ajouter : function(fileName, nom, artiste, genre, passProtection)
+Ajouter : function(fileName, titre, artiste, genre )
 {
-	console.log("Ajouter");
-	// Request id 
-	var id = this.GenerateId();
 
-	var nomClean = nom.replace(/ /g, '_').replace('-','_');
-
-	var artisteClean = artiste.replace(/ /g, '_').replace('-','_');
-
-
-	// Format du nom fichier 001-Titre-Artiste-Genre (cast \s et '-' en '_')
-
-	var fileNameFinal = id + '-' + nomClean + '-' + artisteClean + '.mp3'
-
-	var that = this;
-	fs.renameSync(this.pathToMusic + fileName + '.mp3', this.pathToMusic + fileNameFinal, function(err){
-		if (err) console.log("Erreur Ajout :" + err) ;
-	});
-
-	//var nlleMusique = new Musique(id, nom, artiste, genre, passProtection, false);
-	var nlleMusique = new Musique(id, nomClean, artisteClean, genre, passProtection, false);
-	that.listeMusiques.push(nlleMusique);
-
-	console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + nlleMusique.nom + " - " + nlleMusique.artiste);
+	console.log("[MUSIQUE_MANAGER] : Ajout nouvelle musique : " + titre + " - " + artiste);
 
 	// référencement dans la persistance
-	persistance.AjouterMusique(nlleMusique);
+	persistance.Ajouter(titre, artiste, genre, fileName + ".mp3");
 },
 
 // Validation d'une musique par un modérateur
@@ -73,14 +54,22 @@ Valider : function(idMusique)
 Supprimer : function(idMusique)
 {
 	console.log("[MUSIQUE_MANAGER] : Suppression de la musique " + idMusique);
-
-	// déréférencement dans la persistance
-	persistance.Supprimer(idMusique);
+	var that = this;
+	persistance.GetMusiqueForId(idMusique, function(result){
+		var file = that.pathToMusic + result.fichier;
+		console.log("[MUSIQUE] Suppression " + file);
+		fs.removeSync(file);
+		// déréférencement dans la persistance
+		persistance.Supprimer(idMusique);
+	});
 },
 
-Lire : function()
+Lire : function(callback)
 {
-	//console.log("[MUSIQUE_MANAGER] : Vote dominant : " + vote_manager.GetVoteDominant());
+	genreDominant = vote_manager.GetVoteDominant();
+	persistance_manager.GetRandomMusiqueForGenre(genreDominant, function(result){
+		callback(result.fichier);
+	});
 },
 
 GetMusiqueAleatoire : function()
@@ -96,51 +85,10 @@ IsPassValidationOk : function(passEntree)
 	return (this.mdpValidation === passEntree);
 },
 
-// Pour le test de la chaine de traitement
-Test : function()
-{
-	//console.log("[musique_Manager] : OK");
-	//persistance.Test();
-
-	// Julien : ici un test avec un objet Musique (! majuscule (pas obligatoire))
-	//var musiqueTest = new Musique(1, "nom", "artiste", "genre", "passProtection", "validee");
-	//console.log(musiqueTest.getNom());
-	//musiqueTest.nom = "bref";
-	//console.log(musiqueTest.getNom());
-},
-
 // Renvoi les musiques validées
-GetMusiquesValidees : function()
+GetMusiquesValidees : function(callback)
 {
-	// lecture du fichier des musiques
-	var listeMusiquesValidees = new Array();
-	for (var i = 0; i < this.listeMusiques.length; i++)
-	{
-		if (this.listeMusiques[i].isValidee())
-		{
-			listeMusiquesValidees.push(this.listeMusiques[i]);
-		}
-	}
-
-	// renvoi des musique sous forme de LISTE d'objet Musique
-	return listeMusiquesValidees;
-},
-
-// Renvoi les musiques validées
-GetNomMusiquesValidees : function()
-{
-	// lecture du fichier des musiques
-	var listeMusiquesValidees = new Array();
-	for (var i = 0; i < this.listeMusiques.length; i++)
-	{
-		if (this.listeMusiques[i].isValidee())
-		{
-			listeMusiquesValidees.push(this.listeMusiques[i].nom);
-		}
-	}
-
-	// renvoi des musique sous forme de LISTE d'objet Musique
-	return listeMusiquesValidees;
+	persistance.GetMusiquesValidees(function(result){callback(result)});
 },
 
 // Renvoi les musiques en attente de validation

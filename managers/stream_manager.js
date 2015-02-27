@@ -5,6 +5,7 @@ var lame = require('lame');
 var musique_manager = require("./musique_manager.js");
 var vote_manager = require("./vote_manager.js");
 var fs = require("fs");
+var path = require("path");
 
 var stream_manager = {
   pathToMusic : "",
@@ -14,7 +15,7 @@ var stream_manager = {
   decoder : undefined ,
 
   Initialiser : function(racine){
-    pathToMusic = racine + "musique/"
+    this.pathToMusic = path.normalize(racine + "musique/");
     this.encoder = lame.Encoder({channels: 2, bitDepth: 16, sampleRate: 44100});
     this.decoder = lame.Decoder();
     var that = this;
@@ -24,7 +25,11 @@ var stream_manager = {
   },
 
   StreamSong : function(){
-    var track = this.pathToMusic + musique_manager.GetMusiqueAleatoire().getNomFicher();
+    var track; 
+
+    musique_manager.Lire(function(result){
+      track = path.normalize(pathToMusic + result);
+    });
    
     console.log("Choosed : "+ track);
     var that = this;
