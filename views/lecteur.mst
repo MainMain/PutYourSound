@@ -1,10 +1,10 @@
 <h2>Webradio</h2><br/>
 
 <audio src="http://{{ip}}:{{port}}/stream.mp3" id="player" autoplay></audio>
-<div class="col-md-6">
-	<div class="row">
-		<div class="col-md-4">
-			<div class="spinner black">
+<div style="background-color: rgb(34, 34, 34); border-radius: 10px;text-align: center;">
+	<div>
+		<div>
+			<div class="spinner">
 				<div class="rect1"></div>
 				<div class="rect2"></div>
 				<div class="rect3"></div>
@@ -12,16 +12,19 @@
 				<div class="rect5"></div>
 			</div>
 		</div>
-		<div class="col-md-8" id="songTitle">Titre</div>
+		<div id="songTitle" style="color: white;">
+			<span id="titreMusique">{{musique.titre}}</span>
+			<span id="artisteMusique">{{musique.artiste}}</span>
+			<span id="genreMusique">{{musique.genre}}</span>
+		</div>
 	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<div class="btn-block">
-				
-			<div class="btn-group">
-				<a href="#" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-volume-down"></span></a>
-				<a href="#" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-volume-up"></span></a>
-				<a href="#" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-volume-off"></span></a>
+	<div>
+		<div>
+			<div class="btn-block">	
+			<div>
+				<button onclick="document.getElementById('player').volume-=0.1" class="btn btn-lg btn-primary" style="width: 32%;"> <span class="glyphicon glyphicon-volume-down"></span></button>
+				<button onclick="document.getElementById('player').volume+=0.1" class="btn btn-lg btn-primary" style="width: 32%;"> <span class="glyphicon glyphicon-volume-up"></span></button>
+				<button onclick="document.getElementById('player').muted = (document.getElementById('player').muted ? false : true)" class="btn btn-lg btn-primary" style="width: 32%;"> <span class="glyphicon glyphicon-volume-off"></span></button>
 			</div>
 			</div>
 		</div>

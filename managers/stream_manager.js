@@ -2,20 +2,25 @@ var Musique = require("../model/musique.js")
 var Throttle = require('throttle');
 var probe = require('node-ffprobe');
 var lame = require('lame');
-var musique_manager = require("./musique_manager.js");
-var vote_manager = require("./vote_manager.js");
+var vote_manager = require("./vote_manager");
+var musique_manager = require("./musique_manager");
 var fs = require("fs");
 var path = require("path");
+
+var events = require('events');
 
 var stream_manager = {
   pathToMusic : "",
 
-  encoder : undefined ,
+  emitter : undefined,
 
-  decoder : undefined ,
+  encoder : undefined,
 
-  Initialiser : function(racine, callback){
+  decoder : undefined,
+
+  Initialiser : function(racine, emitter, callback){
     this.pathToMusic = path.normalize(racine + "musique/");
+    this.emitter = emitter;
     this.encoder = lame.Encoder({channels: 2, bitDepth: 16, sampleRate: 44100});
     this.decoder = lame.Decoder();
     var that = this;
@@ -26,11 +31,14 @@ var stream_manager = {
   },
 
   StreamSong : function(){
-    var track; 
     var that = this;
-    musique_manager.Lire(function(result){
-      track = path.normalize(that.pathToMusic + result);
+
+    musique_manager.Lire(function (result) {
+      var track; 
+      
+      track = path.normalize(that.pathToMusic + result.fichier);
       console.log("Choosed : "+ track);
+      that.emitter.emit('newSong');
 
       probe(track, function(err, probeData) {
         //Bitrate de la chanson
@@ -46,7 +54,7 @@ var stream_manager = {
           that.decoder.write(data);
         });
         //Fin du morceau on en demande un autre
-        throttle.on('end', function(){
+        throttle.on('end', function(){         
           that.StreamSong();
         });
       });

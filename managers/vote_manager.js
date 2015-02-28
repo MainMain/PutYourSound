@@ -1,5 +1,5 @@
 // référencement autres couches
-var persistance = require("./persistance_manager.js")
+var persistance = require("./persistance_manager")
 
 // Constructeur
 var vote_Manager = {
@@ -12,22 +12,19 @@ Initialiser : function(callback)
 {
 	// demande la liste des genres à la persistance
 	var that = this;
+	
+	persistance.GetGenres(function(result){
+		that.listeGenres = result;
+	});
+	
 	persistance.GetNRandomGenres(3, function(result){
 		that.listeGenresSelection = result;
-		console.log("[VOTE] Genres Aleatoire: %j", that.listeGenresSelection);
 		// init le nombre de vote
 		that.listeVotes = {};
 		that.listeVotes.genre_1 = {genreId : that.listeGenresSelection[0].id, votes : 0}
 		that.listeVotes.genre_2 = {genreId : that.listeGenresSelection[1].id, votes : 0}
 		that.listeVotes.genre_3 = {genreId : that.listeGenresSelection[2].id, votes : 0}
-		
-		console.log("[VOTE] Liste Votes: %j", that.listeVotes);
 		callback();
-	});
-
-	persistance.GetGenres(function(result){
-		that.listeGenres = result;
-		console.log("[VOTE] Genres : %j", that.listeGenres);
 	});
 
 	// vidage de la liste des votants
@@ -47,7 +44,6 @@ AjouterVote : function(idGenre, ipVotant, callback)
 	// on vérifie qu'il n'a pas voté
 	if(this.listeVotants.indexOf(ipVotant) === -1){
 		this.listeVotants.push(ipVotant);
-		console.log("AJOUT a la liste des votants de " + ipVotant);
 		// on incrémente le nombre de vote
 		if (idGenre == this.listeVotes.genre_1.genreId){
 			this.listeVotes.genre_1.votes += 1;

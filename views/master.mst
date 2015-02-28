@@ -109,7 +109,10 @@
 	var context = new AudioContext();
 	var socket = io.connect('http://{{ip}}:{{port}}');
 	var siofu = new SocketIOFileUpload(socket);
-	updateProgress({pourcent1 : {{pourcent1}}, pourcent2 : {{pourcent2}}, pourcent3 : {{pourcent3}} })
+
+	updateProgress({pourcent1 : {{pourcent1}}, pourcent2 : {{pourcent2}}, pourcent3 : {{pourcent3}} });
+	updateButtonsGenre();
+
 	$("#formUpload").submit(function(e){e.preventDefault()});
 	
 	siofu.listenOnSubmit(document.getElementById("submitUpload"), document.getElementById("file"));
@@ -133,9 +136,6 @@
 			socket.emit("passMode", pass);
 	});
 
-	$("button[id^='genre'").click(function(){
-		socket.emit("voteGenre", $(this).val());
-	});
 	//Resultat de l'envoi du mdp d'authentification
 	//Chargement du template pour choisir la chanson a ecouter
 	socket.on("passModeResult", function(data){
@@ -178,6 +178,18 @@
 		player.attr('src',"data:audio/mpeg;base64," + data);
 	});
 
+	socket.on("chansonEnCours", function(data){
+		$("#titreMusique").text(data.titre);
+		$("#artisteMusique").text(data.artiste);
+		$("#genreMusique").text(data.genre);
+	});
+
+	socket.on("updateButtonsGenre", function(data){
+		var moderation = $('#voteReceiver');
+		var rendered = Mustache.render(data.template, data.json);
+		moderation.html(rendered);
+		updateButtonsGenre(data.json);
+	});
 
 	//Pour mettre a jour les connections entre les balises et le js
 	function updateModerationEcouter(){
@@ -204,11 +216,21 @@
 	};
 
 	function updateProgress(data){
-
 		$("#pourcent1").css("width", data.pourcent1 + '%');
 		$("#pourcent2").css("width", data.pourcent2 + '%');
 		$("#pourcent3").css("width", data.pourcent3 + '%');
 	}; 
+
+	function updateButtonsGenre(data){
+		$("button[id^='genre'").click(function(){
+			socket.emit("voteGenre", $(this).val());
+		});
+		if(data){
+			$("#genre1").val( data[0].id ).text(data[0].genre);
+			$("#genre2").val( data[1].id ).text(data[1].genre);
+			$("#genre3").val( data[2].id ).text(data[2].genre);
+		}
+	};
 
 });
 	

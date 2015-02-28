@@ -8,25 +8,22 @@ var fs = require('fs');
 var siofu = require("socketio-file-upload");
 var ip = require("ip");
 var path = require("path");
+var events = require("events");
 
 var racine = path.normalize( __dirname +"/");
 
 // lien avec les managers =================================================================
 
 // référencement musique manager
-var musique_manager = require("./managers/musique_manager.js");
-// intialisation du manager (chargement en mémoire des musiques)
-
+var musique_manager = require("./managers/musique_manager");
 
 // référencement vote manager
-var vote_manager = require("./managers/vote_manager.js");
-
+var vote_manager = require("./managers/vote_manager");
 
 // référencement stream manager
-var stream_manager = require("./managers/stream_manager.js");
+var stream_manager = require("./managers/stream_manager");
 
-var persistance_manager = require("./managers/persistance_manager.js");
-
+var persistance_manager = require("./managers/persistance_manager");
 
 // configuration express et socket.io ===============================================================
 // lancement d'express
@@ -48,7 +45,8 @@ app.use(siofu.router);
 
 var initComplet = 0;
 
-
+//Tracker pour changement de musique
+var tracker = new events.EventEmitter();
 
 function TrackInit(){
   initComplet += 1;
@@ -69,17 +67,38 @@ function InitApp(){
       TrackInit();
       musique_manager.Initialiser(racine, function(){
         TrackInit();
-        stream_manager.Initialiser(racine, function(){TrackInit()});
+        stream_manager.Initialiser(racine, tracker, function(){TrackInit()});
       });
     });
   });
 };
 
+tracker.on("newSong", function(){
+  var musique = musique_manager.GetMusiqueEnCours();
+  console.log("MUSIQUE en COURS %j", musique);
+  io.emit("chansonEnCours", {titre : musique.titre, artiste : musique.artiste, genre : musique.genre});
+
+      //RAZ des progress bar
+      vote_manager.GetVoteDominant(function(infos){
+        var file = path.normalize(racine + "views/voteProgress.mst");
+        fs.readFile(file, "utf8", function(error, filedata){
+          if(error) throw error;
+          io.emit("voteProgress", {template : filedata.toString(), json : {pourcent1 : infos.pourcent1, pourcent2 : infos.pourcent2, pourcent3 : infos.pourcent3}});
+        });
+      });
+
+      //Reafichage des choix de genre
+      var file = path.normalize(racine + "views/voteForm.mst");
+      var genresEnCours = vote_manager.GetGenresSelection();
+      fs.readFile(file, "utf8", function(error, filedata){
+        if(error) throw error;
+        io.emit("updateButtonsGenre", {template : filedata.toString(), json : genresEnCours});
+      });
+});
+
 function StartApp(){
 
-//On lance le stream
 stream_manager.StreamSong();
-
 // routes =================================================================
 // route principale (racine)
 app.get('/', function(req, res) {
@@ -87,6 +106,7 @@ app.get('/', function(req, res) {
   // envoi des données de la page
   var genresSelection = vote_manager.GetGenresSelection();
   var genres = vote_manager.GetGenres();
+  var musiqueEnCours = musique_manager.GetMusiqueEnCours();
   vote_manager.GetVoteDominant(function(infos){
 
     res.render('master', {
@@ -98,7 +118,8 @@ app.get('/', function(req, res) {
       genre3 : { id : genresSelection[2].id, genre : genresSelection[2].genre},
       pourcent1 : infos.pourcent1, 
       pourcent2 : infos.pourcent2, 
-      pourcent3 : infos.pourcent3
+      pourcent3 : infos.pourcent3,
+      musique : musiqueEnCours
     });
   });
 });
@@ -151,12 +172,12 @@ io.sockets.on('connection', function (socket) {
   });
   
   socket.on("listenSong", function(id){
-   file = path.normalize(racine + "views/moderationFormValider.mst");
-   fs.readFile(file, "utf8", function(error, filedata){
-    if(error) throw error;
-    socket.emit("listenSongResult", {template : filedata.toString(), json : {songId : id}});
+    file = path.normalize(racine + "views/moderationFormValider.mst");
+    fs.readFile(file, "utf8", function(error, filedata){
+      if(error) throw error;
+      socket.emit("listenSongResult", {template : filedata.toString(), json : {songId : id}});
+    });
   });
- });
 
   socket.on("getSong", function(id){
     var file;
@@ -202,8 +223,7 @@ io.sockets.on('connection', function (socket) {
           if(error) throw error;
           io.emit("voteProgress", {template : filedata.toString(), json : {pourcent1 : infos.pourcent1, pourcent2 : infos.pourcent2, pourcent3 : infos.pourcent3}});
         });
-      });
-      
+      });     
     });
   });
 });
