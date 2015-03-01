@@ -1,0 +1,18 @@
+<div>
+	<h2>Cours des votes</h2>
+	<div class="progress">
+		<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" id="pourcent1" aria-valuenow="{{pourcent1}}" aria-valuemin="0" aria-valuemax="100">
+			<span class="sr-only"></span>
+		</div>
+	</div>
+	<div class="progress">
+		<div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" id="pourcent2" aria-valuenow="{{pourcent2}}" aria-valuemin="0" aria-valuemax="100">
+			<span class="sr-only"></span>
+		</div>
+	</div>
+	<div class="progress">
+		<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" id="pourcent3" aria-valuenow="{{pourcent3}}" aria-valuemin="0" aria-valuemax="100">
+			<span class="sr-only"></span>
+		</div>
+	</div>
+</div>

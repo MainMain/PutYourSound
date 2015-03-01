@@ -1,97 +1,109 @@
 // référencement autres couches
-var persistance = require("../persistance/persistance_file.js")
+var persistance = require("./persistance_manager")
 
 // Constructeur
 var vote_Manager = {
-	genre_1 : { nom : undefined, votes : 0 },
-	genre_2 : { nom : undefined, votes : 0 },
-	genre_3 : { nom : undefined, votes : 0 },
 	listeGenres : undefined,
+	listeGenresSelection : undefined,
+	listeVotes : undefined,
 	listeVotants : undefined,
 
-Initialiser : function()
+Initialiser : function(callback)
 {
 	// demande la liste des genres à la persistance
-	this.listeGenres = persistance.GetGenres();
-
-	// choix de trois genres aléatoires
-	var num1 = Math.floor(Math.random() *  this.listeGenres.length);
-
-	var num2;
-	do
-	{
-		num2  = Math.floor(Math.random() *  this.listeGenres.length);
-	}while(num2 === num1)
-
-	var num3;
-	do
-	{
-		num3 = Math.floor(Math.random() *  this.listeGenres.length);
-	}while(num3 === num1 || num3 === num2)
-
-	// affecte les noms
-	this.genre_1.nom = this.listeGenres[num1];
-	this.genre_2.nom = this.listeGenres[num2];
-	this.genre_3.nom = this.listeGenres[num3];
-
-	// init le nombre de vote
-	this.genre_1.votes = 0;
-	this.genre_2.votes = 0;
-	this.genre_3.votes = 0;
-
-	// le bon log
-	console.log("[VOTE_MANAGER] : Nouveaux genre à voter : " + this.genre_1.nom + " - " 
-		+ this.genre_2.nom + " - " + this.genre_3.nom);
-
+	var that = this;
+	
+	persistance.GetGenres(function(result){
+		that.listeGenres = result;
+	});
+	
+	persistance.GetNRandomGenres(3, function(result){
+		that.listeGenresSelection = result;
+		// init le nombre de vote
+		that.listeVotes = {};
+		that.listeVotes.genre_1 = {genreId : that.listeGenresSelection[0].id, votes : 0}
+		that.listeVotes.genre_2 = {genreId : that.listeGenresSelection[1].id, votes : 0}
+		that.listeVotes.genre_3 = {genreId : that.listeGenresSelection[2].id, votes : 0}
+		callback();
+	});
 
 	// vidage de la liste des votants
 	this.listeVotants = new Array();
 },
 
+GetGenres : function(){
+	return this.listeGenres;
+},
+GetGenresSelection : function(){
+	return this.listeGenresSelection;
+},
+
 // Un utilisateur vient de voter
-AjouterVote : function(nomDuGenre)
+AjouterVote : function(idGenre, ipVotant, callback)
 {
 	// on vérifie qu'il n'a pas voté
-	// TODO ?
-
-	// vérification que c'est un des trois genres en attribut
-	if (nomDuGenre === this.genre_1.nom || 
-		nomDuGenre === this.genre_2.nom || 
-		nomDuGenre === this.genre_3.nom)
-	{
+	if(this.listeVotants.indexOf(ipVotant) === -1){
+		this.listeVotants.push(ipVotant);
 		// on incrémente le nombre de vote
-		if (nomDuGenre === this.genre_1.nom) this.genre_1.votes++;
-		else if (nomDuGenre === this.genre_2.nom) this.genre_2.votes++;
-		else if (nomDuGenre === this.genre_3.nom) this.genre_3.votes++;
+		if (idGenre == this.listeVotes.genre_1.genreId){
+			this.listeVotes.genre_1.votes += 1;
+			callback(this.listeGenresSelection[0]);
+		}
+
+		if (idGenre == this.listeVotes.genre_2.genreId){
+			this.listeVotes.genre_2.votes += 1;	
+			callback(this.listeGenresSelection[1]);
+		}
+		if (idGenre == this.listeVotes.genre_3.genreId){
+			this.listeVotes.genre_3.votes += 1;
+			callback(this.listeGenresSelection[2]);
+		}
 	}
 },
 
 // renvoi le genre avec le plus de votes
-GetVoteDominant : function()
+GetVoteDominant : function(callback)
 {
-	var genreDominant = this.genre_1.nom;
-	// Recherche du genre avec le plus de voix
-	if (this.genre_1.votes == Math.max(this.genre_1.votes, this.genre_2.votes, this.genre_3.votes))
-	{
-		genreDominant = this.genre_1.nom;
-	}
-	else if (this.genre_2.votes == Math.max(this.genre_1.votes, this.genre_2.votes, this.genre_3.votes))
-	{
-		genreDominant =  this.genre_2.nom;
-	}
-	else if (this.genre_3.votes == Math.max(this.genre_1.votes, this.genre_2.votes, this.genre_3.votes))
-	{
-		genreDominant =  this.genre_3.nom;
+	var genreDominant;
+	var votesArray = [this.listeVotes.genre_1.votes, this.listeVotes.genre_2.votes, this.listeVotes.genre_3.votes];
+	var infoVotes = {};
+	
+	var totalVote = votesArray[0] + votesArray[1] + votesArray[2];
+	var max = Math.max(votesArray) === 0 ? -1 : Math.max(votesArray);
+	switch(max){
+		case this.listeVotes.genre_1.votes :
+			genreDominant = this.listeVotes.genre_1.genreId;
+		break;
+		case this.listeVotes.genre_2.votes :
+			genreDominant = this.listeVotes.genre_2.genreId;
+		break;
+		case this.listeVotes.genre_3.votes :
+			genreDominant = this.listeVotes.genre_2.genreId;
+		break;
+		default :
+			genreDominant = this.listeVotes.genre_1.genreId;
+		break;
 	}
 
-	console.log("{VOTE_MANAGER] : Retourne vote genreDominant : " + genreDominant );
-	return genreDominant;
+	var pourcent1 = 0;
+	var pourcent2 = 0;
+	var pourcent3 = 0;
+
+	if(totalVote != 0){
+		pourcent1 = parseInt(100 * (votesArray[0]/totalVote));
+		pourcent2 = parseInt(100 * (votesArray[1]/totalVote));
+		pourcent3 = parseInt(100 * (votesArray[2]/totalVote));
+	}
+
+	infoVotes.genreDominant = genreDominant;
+	infoVotes.pourcent1 = pourcent1;
+	infoVotes.pourcent2 = pourcent2;
+	infoVotes.pourcent3 = pourcent3;
+
+	console.log("[VOTE_MANAGER] : Retourne vote id genreDominant : %j", infoVotes );
+	callback(infoVotes);
 },
 
-Test : function()
-{
-	console.log("[vote_Manager] : OK");
-}
 };
 
 // Définition des dtrois genres aléatoire (attributs)

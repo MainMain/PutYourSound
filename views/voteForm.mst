@@ -1,0 +1,14 @@
+<div>
+	<h2>Votez pour votre style</h2>
+	<label>Choisissez le style de musique à passer ensuite sur notre webradio.</label>
+
+	<div class="col-md-4" style="padding: 0;">
+		<button type="text" class="btn btn-lg btn-block btn-success" id="genre1" value="{{genre1.id}}">{{genre1.genre}}</button>
+	</div>
+	<div class="col-md-4" style="padding: 0;">
+		<button type="text" class="btn btn-lg btn-block btn-warning" id="genre2" value="{{genre2.id}}">{{genre2.genre}}</button>
+	</div>
+	<div class="col-md-4" style="padding: 0;">
+		<button type="text" class="btn btn-lg btn-block btn-danger" id="genre3" value="{{genre3.id}}">{{genre3.genre}}</button>
+	</div>
+</div>
